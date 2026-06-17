@@ -1,0 +1,352 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                <i class="fa-solid fa-user-shield text-[#FF6B00]"></i>
+                إدارة طاقم وحسابات المسؤولين
+            </h1>
+            <p class="text-xs text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">التحكم في حسابات مدراء النظام، تعديل رتبهم، ومراقبة الصلاحيات الفرعية الممنوحة لهم</p>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-users-gear text-[#FF6B00]"></i>
+                    سجل حسابات الإدارة الحالية
+                </h3>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">قائمة المسؤولين المكتشفين في النظام والصلاحيات المفعلة لكل حساب حياً</p>
+            </div>
+            
+            <button onclick="openCreateModal()" class="w-full sm:w-auto px-4 py-2.5 bg-[#111111] border border-[#2A2A2A] hover:border-[#FF6B00] text-xs font-bold text-gray-300 hover:text-white rounded-xl transition-all flex items-center justify-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                <i class="fa-solid fa-user-plus text-[#FF6B00] text-sm"></i>
+                إنشاء حساب مسؤول جديد
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs text-gray-300">
+                <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                    <tr>
+                        <th class="py-3 px-4">المسؤول الإداري</th>
+                        <th class="py-3 px-4">البريد الإلكتروني</th>
+                        <th class="py-3 px-4 text-center">الدور الأساسي (Role)</th>
+                        <th class="py-3 px-4">الصلاحيات الممنوحة (Sub-Role)</th>
+                        <th class="py-3 px-4 text-center">الحالة</th>
+                        <th class="py-3 px-4 text-center">إجراء التحكم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(adminList && adminList.length > 0) { %>
+                        <% adminList.forEach(user => { %>
+                            <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                                <td class="py-4 px-4 font-semibold text-white whitespace-nowrap"><%= user.name %></td>
+                                <td class="py-4 px-4 font-mono text-gray-400 whitespace-nowrap"><%= user.email %></td>
+                                <td class="py-4 px-4 text-center whitespace-nowrap">
+                                    <span class="px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold tracking-wider <%= user.role === 'super_admin' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-orange-500/10 text-[#FF6B00] border border-[#FF6B00]/20' %>">
+                                        <%= user.role %>
+                                    </span>
+                                </td>
+                                
+                                <td class="py-4 px-4 max-w-xs md:max-w-md">
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <% if (user.sub_role && user.sub_role.length > 0) { %>
+                                            <% user.sub_role.forEach(role => { %>
+                                                <% if(role === 'management_officer') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/15"><i class="fa-solid fa-user-tie"></i> إدارة عامة</span>
+                                                <% } else if(role === 'finance_officer') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-green-500/10 text-green-400 border border-green-500/15"><i class="fa-solid fa-scale-balanced"></i> المالية</span>
+                                                <% } else if(role === 'drivers_manager') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/15"><i class="fa-solid fa-car"></i> الكباتن</span>
+                                                <% } else if(role === 'clients_manager') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/15"><i class="fa-solid fa-users"></i> الزبائن</span>
+                                                <% } else if(role === 'orders_manager') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-pink-500/10 text-pink-400 border border-pink-500/15"><i class="fa-solid fa-route"></i> الرحلات</span>
+                                                <% } else if(role === 'notifications_manager') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/15"><i class="fa-solid fa-bell"></i> الإشعارات</span>
+                                                <% } else if(role === 'software_admin') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-teal-500/10 text-teal-400 border border-teal-500/15"><i class="fa-solid fa-code"></i> مطور النظام</span>
+                                                <% } else if(role === 'support_team') { %>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/15"><i class="fa-solid fa-headset"></i> الدعم الفني</span>
+                                                <% } %>
+                                            <% }) %>
+                                        <% } else { %>
+                                            <span class="text-gray-600 text-[11px] italic">بدون صلاحيات فرعية</span>
+                                        <% } %>
+                                    </div>
+                                </td>
+
+                                <td class="py-4 px-4 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1 text-[10px] <%= user.is_active ? 'text-green-400' : 'text-gray-500' %>">
+                                        <span class="w-1.5 h-1.5 rounded-full <%= user.is_active ? 'bg-green-400 animate-pulse' : 'bg-gray-600' %>"></span>
+                                        <%= user.is_active ? 'نشط' : 'معطل' %>
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 text-center whitespace-nowrap">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button onclick="openEditModal('<%= user.id %>', '<%= user.role %>', '<%= JSON.stringify(user.sub_role || []) %>', <%= user.is_active %>)" class="p-2 bg-[#111111] border border-[#2A2A2A] hover:border-[#FF6B00] text-gray-400 hover:text-white rounded-xl transition-all" title="تعديل الصلاحيات">
+                                            <i class="fa-solid fa-user-gear text-xs"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="py-12 text-center text-gray-500">لا توجد حسابات إدارية.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="createAdminModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl w-full max-w-lg p-6 overflow-y-auto max-h-[90vh] text-right">
+        <div class="flex justify-between items-center pb-4 border-b border-[#2A2A2A] mb-4">
+            <button onclick="closeCreateModal()" class="text-gray-500 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                <i class="fa-solid fa-user-plus text-[#FF6B00]"></i> إنشاء حساب مسؤول جديد للنظام
+            </h3>
+        </div>
+
+        <form id="createAdminForm" class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">الاسم الكامل للمسؤول *</label>
+                <input type="text" id="create_name" required placeholder="مثال: عبد الرؤوف بن علي" class="w-full bg-[#111111] border border-[#2A2A2A] text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">البريد الإلكتروني المهني *</label>
+                <input type="email" id="create_email" required placeholder="name@wajda.dz" class="w-full bg-[#111111] border border-[#2A2A2A] text-white text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-[#FF6B00] transition-all font-mono text-left">
+            </div>
+            
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">كلمة المرور الأساسية *</label>
+                <div class="relative flex items-center">
+                    <input type="text" id="create_password" required placeholder="انقر لتوليد رمز معقد تلقائياً..." class="w-full bg-[#111111] border border-[#2A2A2A] text-white text-xs rounded-xl pr-4 pl-24 py-3 focus:outline-none focus:border-[#FF6B00] transition-all text-left font-mono">
+                    
+                    <div class="absolute left-2 flex items-center gap-1">
+                        <button type="button" onclick="generateSecurePassword()" class="px-2 py-1.5 bg-[#2A2A2A] hover:bg-[#FF6B00] text-gray-300 hover:text-black rounded-lg text-[10px] font-bold transition-all flex items-center gap-1" style="font-family: 'Cairo', sans-serif;" title="توليد كلمة مرور عشوائية معقدة">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                            توليد
+                        </button>
+                        <button type="button" id="copyPasswordBtn" onclick="copyGeneratedPassword()" disabled class="px-2 py-1.5 bg-[#1C1C1C] text-gray-600 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1" style="font-family: 'Cairo', sans-serif;" title="نسخ إلى الحافظة">
+                            <i class="fa-solid fa-copy text-[10px]"></i>
+                            نسخ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">الدور الأساسي بالمنظومة (Role) *</label>
+                <select id="create_role" required class="w-full bg-[#111111] border border-[#2A2A2A] text-gray-300 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                    <option value="admin">مسؤول لوحة تحكم (Admin)</option>
+                    <option value="super_admin">مدير نظام جذر (Super Admin)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-2" style="font-family: 'Cairo', sans-serif;">منح الصلاحيات الفرعية المخصصة (Sub-Roles)</label>
+                <div class="grid grid-cols-2 gap-2 bg-[#111111] p-3 border border-[#2A2A2A] rounded-xl text-[11px] text-gray-300">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="management_officer" class="accent-[#FF6B00]"> إدارة عامة</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="finance_officer" class="accent-[#FF6B00]"> العمليات المالية</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="drivers_manager" class="accent-[#FF6B00]"> شؤون الكباتن</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="clients_manager" class="accent-[#FF6B00]"> إدارة الزبائن</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="orders_manager" class="accent-[#FF6B00]"> مراقبة الرحلات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="notifications_manager" class="accent-[#FF6B00]"> بث الإشعارات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="software_admin" class="accent-[#FF6B00]"> مطور برمجيات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="create_sub_roles" value="support_team" class="accent-[#FF6B00]"> الدعم الفني</label>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#FF6B00] hover:bg-[#e05e00] text-black font-bold text-xs py-3 rounded-xl transition-all mt-2" style="font-family: 'Cairo', sans-serif;">تثبيت الحساب وضخ البيانات</button>
+        </form>
+    </div>
+</div>
+
+<div id="editAdminModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl w-full max-w-lg p-6 overflow-y-auto max-h-[90vh] text-right">
+        <div class="flex justify-between items-center pb-4 border-b border-[#2A2A2A] mb-4">
+            <button onclick="closeEditModal()" class="text-gray-500 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                <i class="fa-solid fa-user-gear text-[#FF6B00]"></i> تحديث رتب وصلاحيات المسؤول
+            </h3>
+        </div>
+
+        <form id="editAdminForm" class="space-y-4">
+            <input type="hidden" id="edit_admin_id">
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">الدور الأساسي (Role)</label>
+                <select id="edit_role" required class="w-full bg-[#111111] border border-[#2A2A2A] text-gray-300 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                    <option value="admin">مسؤول لوحة تحكم (Admin)</option>
+                    <option value="super_admin">مدير نظام جذر (Super Admin)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5" style="font-family: 'Cairo', sans-serif;">حالة الحساب التشغيلية</label>
+                <select id="edit_status" required class="w-full bg-[#111111] border border-[#2A2A2A] text-gray-300 text-xs rounded-xl px-4 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                    <option value="true">نشط (يملك صلاحية تسجيل الدخول)</option>
+                    <option value="false">معطل / موقف مؤقتاً</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-2" style="font-family: 'Cairo', sans-serif;">تعديل الصلاحيات الفرعية (Sub-Roles)</label>
+                <div class="grid grid-cols-2 gap-2 bg-[#111111] p-3 border border-[#2A2A2A] rounded-xl text-[11px] text-gray-300">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="management_officer" class="accent-[#FF6B00]"> إدارة عامة</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="finance_officer" class="accent-[#FF6B00]"> العمليات المالية</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="drivers_manager" class="accent-[#FF6B00]"> شؤون الكباتن</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="clients_manager" class="accent-[#FF6B00]"> إدارة الزبائن</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="orders_manager" class="accent-[#FF6B00]"> مراقبة الرحلات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="notifications_manager" class="accent-[#FF6B00]"> بث الإشعارات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="software_admin" class="accent-[#FF6B00]"> مطور برمجيات</label>
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" name="edit_sub_roles" value="support_team" class="accent-[#FF6B00]"> الدعم الفني</label>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#FF6B00] hover:bg-[#e05e00] text-black font-bold text-xs py-3 rounded-xl transition-all mt-2" style="font-family: 'Cairo', sans-serif;">حفظ وتطبيق التحديثات فوراً</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 🧠 1. وظيفة توليد كلمة مرور معقدة وآمنة جداً حياً
+    function generateSecurePassword() {
+        const length = 12;
+        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~";
+        let password = "";
+        for (let i = 0, n = charset.length; i < length; ++i) {
+            password += charset.charAt(Math.floor(Math.random() * n));
+        }
+        
+        const passwordInput = document.getElementById('create_password');
+        const copyBtn = document.getElementById('copyPasswordBtn');
+        
+        passwordInput.value = password; // حقن كلمة المرور في الـ input
+        
+        // تفعيل زر النسخ وتغيير استايله ليكون نشطاً وبرتقالياً
+        copyBtn.disabled = false;
+        copyBtn.className = "px-2 py-1.5 bg-[#FF6B00]/20 text-[#FF6B00] border border-[#FF6B00]/30 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 hover:bg-[#FF6B00]/30";
+    }
+
+    // 📋 2. وظيفة النسخ السريع إلى حافظة الجهاز مع تبديل حالة الزر مؤقتاً للتأكيد بصرياً
+    function copyGeneratedPassword() {
+        const passwordInput = document.getElementById('create_password');
+        const copyBtn = document.getElementById('copyPasswordBtn');
+        
+        if (!passwordInput.value) return;
+        
+        // استخدام واجهة الـ Clipboard الحديثة للنسخ
+        navigator.clipboard.writeText(passwordInput.value).then(() => {
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = `<i class="fa-solid fa-check text-[10px] text-green-400"></i> تم النسخ!`;
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000); // إرجاع النص الأصلي بعد ثانيتين
+        }).catch(err => {
+            console.error('فشل النسخ تلقائياً:', err);
+        });
+    }
+
+    // التحكم بنوافذ الإنشاء
+    function openCreateModal() { document.getElementById('createAdminModal').classList.remove('hidden'); }
+    function closeCreateModal() { 
+        document.getElementById('createAdminModal').classList.add('hidden'); 
+        // تصفير حالة أزرار الباسورد عند الإغلاق
+        document.getElementById('create_password').value = '';
+        const copyBtn = document.getElementById('copyPasswordBtn');
+        copyBtn.disabled = true;
+        copyBtn.className = "px-2 py-1.5 bg-[#1C1C1C] text-gray-600 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1";
+    }
+
+    // فتح نافذة التعديل مع تعبئة البيانات تلقائياً
+    function openEditModal(id, role, subRolesJson, isActive) {
+        document.getElementById('edit_admin_id').value = id;
+        document.getElementById('edit_role').value = role;
+        document.getElementById('edit_status').value = isActive ? "true" : "false";
+
+        const checkBoxes = document.querySelectorAll('input[name="edit_sub_roles"]');
+        checkBoxes.forEach(cb => cb.checked = false);
+
+        const currentSubRoles = JSON.parse(subRolesJson);
+        currentSubRoles.forEach(val => {
+            const match = document.querySelector(`input[name="edit_sub_roles"][value="${val}"]`);
+            if(match) match.checked = true;
+        });
+
+        document.getElementById('editAdminModal').classList.remove('hidden');
+    }
+    function closeEditModal() { document.getElementById('editAdminModal').classList.add('hidden'); }
+
+    // 📩 معالجة سحب وإرسال نموذج الإنشاء (Create)
+    document.getElementById('createAdminForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const selectedSubRoles = [];
+        document.querySelectorAll('input[name="create_sub_roles"]:checked').forEach(cb => selectedSubRoles.push(cb.value));
+
+        const payload = {
+            name: document.getElementById('create_name').value,
+            email: document.getElementById('create_email').value,
+            password: document.getElementById('create_password').value,
+            role: document.getElementById('create_role').value,
+            sub_role: selectedSubRoles
+        };
+
+        fetch('/admin/settings/create-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(data.message || 'حدث خطأ غير متوقع.');
+            }
+        }).catch(err => console.error(err));
+    });
+
+    // 📩 معالجة إرسال نموذج التحديث (Update)
+    document.getElementById('editAdminForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const selectedSubRoles = [];
+        document.querySelectorAll('input[name="edit_sub_roles"]:checked').forEach(cb => selectedSubRoles.push(cb.value));
+
+        const payload = {
+            id: document.getElementById('edit_admin_id').value,
+            role: document.getElementById('edit_role').value,
+            is_active: document.getElementById('edit_status').value === "true",
+            sub_role: selectedSubRoles
+        };
+
+        fetch('/admin/settings/update-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert('فشل تحديث البيانات.');
+            }
+        }).catch(err => console.error(err));
+    });
+</script>
+
+<%- include('./partials/footer') %>

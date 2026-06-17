@@ -1,0 +1,198 @@
+<%- include('partials/header', { title: 'لوحة تحكم الكابتن | واجدة' }) %>
+
+<div class="flex-grow container mx-auto max-w-5xl px-4 py-8">
+    
+    <div class="bg-kCard border border-kBorder rounded-3xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+        <div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-right w-full md:w-auto">
+            <span class="text-4xl bg-kBg border border-kBorder p-3 rounded-2xl shadow-inner">🚚</span>
+            <div>
+                <h1 class="text-2xl font-black text-white mb-1">مرحباً بك يا كابتن، <span class="text-kOrange"><%= driverName %></span>! 👋</h1>
+                <p class="text-xs text-kMuted">تابع حساباتك المالية، سجل فواتيرك، وصافي أرباحك مباشرة من النظام الافتراضي.</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3 w-full md:w-auto justify-center md:justify-end">
+            <a href="/driver/logout" 
+                class="flex items-center gap-1.5 border border-red-500/30 hover:bg-red-950/30 text-red-400 font-bold text-xs py-2.5 px-4 rounded-xl transition-all duration-200 shadow-lg active:scale-95">
+                <span>🚪</span> تسجيل الخروج
+            </a>
+            
+            <div class="flex items-center gap-2.5 bg-kBg border border-kBorder px-4 py-2.5 rounded-xl">
+                <span class="flex h-2.5 w-2.5 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </span>
+                <span class="text-xs font-bold text-green-400 tracking-wide">متصل 📡</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-kCard border border-kBorder rounded-2xl p-6 shadow-md transition-all duration-200 hover:border-kOrange/20">
+            <div class="text-xs font-bold text-kMuted mb-1">رصيد المحفظة الحالي</div>
+            <div id="wallet_balance" class="text-kOrange font-black text-2xl mb-1"><%= walletBalance %> د.ج</div>
+            <p class="text-[10px] text-kMuted leading-relaxed">سقف الدين المسموح لك هو: <span class="text-white font-bold"><%= maxDebtLimit %> د.ج-</span></p>
+        </div>
+
+        <div class="bg-kCard border border-kBorder rounded-2xl p-6 shadow-md transition-all duration-200 hover:border-yellow-500/20">
+            <div class="text-xs font-bold text-kMuted mb-1">إجمالي أرباح الكابتن 💰</div>
+            <div class="text-yellow-500 font-black text-2xl mb-1"><%= totalRevenue %> د.ج</div>
+            <p class="text-[10px] text-kMuted leading-relaxed">مجموع الأرباح الصافية التي حققتها منذ انضمامك.</p>
+        </div>
+
+        <div class="bg-kCard border border-kBorder rounded-2xl p-6 shadow-md transition-all duration-200 hover:border-green-500/20">
+            <div class="text-xs font-bold text-kMuted mb-1">رحلات اليوم المكتملة</div>
+            <div class="text-green-400 font-black text-2xl mb-1"><%= todayTrips %> رحلات</div>
+            <p class="text-[10px] text-kMuted leading-relaxed">الفواتير التي تم إغلاقها بنجاح منذ بداية اليوم.</p>
+        </div>
+
+        <div class="bg-kCard border border-kBorder rounded-2xl p-6 shadow-md transition-all duration-200 hover:border-blue-500/20">
+            <div class="text-xs font-bold text-kMuted mb-1">مجموع الفواتير المؤرشفة</div>
+            <div class="text-blue-400 font-black text-2xl mb-1"><%= invoices.length %> فاتورة</div>
+            <p class="text-[10px] text-kMuted leading-relaxed">عدد الفواتير المسجلة المعروضة في الجدول بالأسفل.</p>
+        </div>
+    </div>
+
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h2 class="text-lg font-black text-white flex items-center gap-2">
+            <span>📋</span> سجل الفواتير والعمليات السابقة
+        </h2>
+        
+        <div class="relative w-full sm:w-72">
+            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-kMuted text-sm">🔍</span>
+            <input type="text" id="invoice_search" value="INV-" onkeyup="filterAndPaginateInvoices()" oninput="preventPrefixDelete(this)"
+                class="w-full bg-kCard border border-kBorder text-white rounded-xl pr-9 pl-4 py-2 text-xs font-mono font-bold outline-none transition-all duration-200 focus:border-kOrange">
+        </div>
+    </div>
+
+    <div class="bg-kCard border border-kBorder rounded-3xl overflow-hidden shadow-2xl">
+        <% if (typeof invoices !== 'undefined' && invoices.length > 0) { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse" id="invoices_table">
+                    <thead>
+                        <tr class="bg-kBg/50 border-b border-kBorder text-kMuted text-xs font-bold">
+                            <th class="p-4">رقم الفاتورة</th>
+                            <th class="p-4">نوع الرحلة</th>
+                            <th class="p-4">سعر التوصيل الكلي</th>
+                            <th class="p-4">ضريبة المنصة</th>
+                            <th class="p-4">صافي ربحك </th>
+                            <th class="p-4">تاريخ المعاملة</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs font-semibold divide-y divide-kBorder/40 text-white/90">
+                        <% invoices.forEach(function(invoice) { %>
+                            <tr class="invoice-row hover:bg-kBg/30 transition-colors duration-150" data-invoice="<%= invoice.invoice_no %>">
+                                <td class="p-4 font-mono text-kOrange font-bold target-invoice-no"><%= invoice.invoice_no %></td>
+                                
+                                <td class="p-4">
+                                    <span class="px-2 py-1 rounded-md text-[10px] font-bold <%= invoice.order_type === 'package' ? 'text-kOrange bg-kOrange/10' : 'text-green-400 bg-green-400/10' %>">
+                                        <%= invoice.order_type === 'package' ? '📦 توصيل طرد' : '🛒 تسوق وشراء' %>
+                                    </span>
+                                </td>
+                                
+                                <td class="p-4 text-white font-bold"><%= parseFloat(invoice.trip_price).toFixed(0) %> د.ج</td>
+                                <td class="p-4 text-red-400 font-bold"><%= parseFloat(invoice.total_platform_earnings).toFixed(0) %> د.ج-</td>
+                                <td class="p-4 text-green-400 font-black text-sm"><%= parseFloat(invoice.driver_net_profit).toFixed(0) %> د.ج</td>
+                                
+                                <td class="p-4 text-kMuted font-normal text-[11px]">
+                                    <%= new Date(invoice.created_at).toLocaleString('ar-DZ', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: '2-digit' }) %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="pagination_controls" class="flex items-center justify-between border-t border-kBorder px-6 py-4 bg-kBg/20">
+                <button id="btn_prev" onclick="changePage(-1)" 
+                    class="bg-kBg border border-kBorder hover:border-kOrange text-white text-xs font-bold py-2 px-4 rounded-xl transition-all disabled:opacity-40 disabled:hover:border-kBorder">
+                    ← السابق
+                </button>
+                <span id="page_indicator" class="text-xs font-bold text-kMuted">الصفحة 1 من 1</span>
+                <button id="btn_next" onclick="changePage(1)" 
+                    class="bg-kBg border border-kBorder hover:border-kOrange text-white text-xs font-bold py-2 px-4 rounded-xl transition-all disabled:opacity-40 disabled:hover:border-kBorder">
+                    التالي →
+                </button>
+            </div>
+        <% } else { %>
+            <div class="p-12 text-center">
+                <span class="text-4xl block mb-4">📂</span>
+                <h3 class="text-sm font-bold text-white mb-1">لا توجد فواتير سابقة مؤرشفة</h3>
+                <p class="text-xs text-kMuted max-w-sm mx-auto leading-relaxed">سجل فواتيرك فارغ حالياً. بمجرد قيامك بإكمال الرحلات وتسليم الطرود عبر التطبيق، ستظهر فواتيرك هنا بالتفصيل المالي الممل.</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 6;
+
+    function preventPrefixDelete(input) {
+        if (!input.value.startsWith("INV-")) {
+            input.value = "INV-";
+        }
+    }
+
+    function filterAndPaginateInvoices() {
+        const searchQuery = document.getElementById('invoice_search').value.toLowerCase().trim();
+        const allRows = Array.from(document.querySelectorAll('.invoice-row'));
+        
+        const filteredRows = allRows.filter(row => {
+            const invoiceNo = row.getAttribute('data-invoice').toLowerCase();
+            
+            if (searchQuery === 'inv-' || searchQuery === 'inv') {
+                return true;
+            }
+            
+            if (invoiceNo.includes(searchQuery)) {
+                return true;
+            } else {
+                row.classList.add('hidden');
+                return false;
+            }
+        });
+
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+
+        allRows.forEach(row => row.classList.add('hidden'));
+
+        filteredRows.forEach((row, index) => {
+            if (index >= startIndex && index < endIndex) {
+                row.classList.remove('hidden');
+            }
+        });
+
+        const indicator = document.getElementById('page_indicator');
+        const btnPrev = document.getElementById('btn_prev');
+        const btnNext = document.getElementById('btn_next');
+
+        if(indicator) indicator.innerText = `الصفحة ${currentPage} من ${totalPages}`;
+        if(btnPrev) btnPrev.disabled = (currentPage === 1);
+        if(btnNext) btnNext.disabled = (currentPage === totalPages);
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        filterAndPaginateInvoices();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.querySelector('.invoice-row')) {
+            filterAndPaginateInvoices();
+            
+            const searchInput = document.getElementById('invoice_search');
+            if(searchInput) {
+                searchInput.focus();
+                searchInput.setSelectionRange(4, 4);
+            }
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

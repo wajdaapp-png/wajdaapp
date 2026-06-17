@@ -1,0 +1,116 @@
+<!-- views/admin/partials/sidebar.ejs -->
+<% 
+  // جلب الصلاحيات الفرعية وتأمينها احتياطياً لمنع انفجار الصفحة
+  let activePermissions = (typeof allowedPages !== 'undefined') ? allowedPages : [];
+  
+  // حصانة مطلقة: إذا كان حساب الـ Owner الموحد، نمنحه كل الصلاحيات بصرياً فوراً
+  if (typeof req !== 'undefined' && req.admin && req.admin.role === 'owner') {
+      activePermissions = ['dashboard', 'drivers', 'clients', 'orders', 'finance', 'notifications', 'settings', 'tickets'];
+  }
+%>
+
+<!-- 🛡️ تم إضافة z-50 لرفع طبقة السايدبار فوق كل الكروت المتداخلة، و shadow-2xl لمنع نفاذ الخلفية -->
+<div class="w-64 bg-[#1C1C1C] h-screen fixed right-0 top-0 border-l border-[#2A2A2A] flex flex-col justify-between z-50 shadow-2xl select-none">
+    <div>
+        <!-- الترويسة العلوية للسايدبار -->
+        <div class="p-6 border-b border-[#2A2A2A] flex items-center gap-3 bg-[#141414]">
+            <div class="w-8 h-8 rounded-lg bg-[#FF6B00] flex items-center justify-center text-black font-bold text-lg shadow-md shadow-[#FF6B00]/10">
+                و
+            </div>
+            <div>
+                <h1 class="font-bold text-sm tracking-wide text-white" style="font-family: 'Cairo', sans-serif;">لوحة تحكم واجدة</h1>
+                <span class="text-[10px] text-[#888888]" style="font-family: 'Cairo', sans-serif;">عقل النظام المركزي</span>
+            </div>
+        </div>
+
+        <!-- روابط الملاحة المفحوصة بالصلاحيات الإدارية المدمجة -->
+        <nav class="mt-6 px-4 space-y-2 overflow-y-auto max-h-[calc(100vh-180px)]">
+            
+            <% if (activePermissions.includes('dashboard')) { %>
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'dashboard' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-chart-pie text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">لوحة الإحصائيات</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('drivers')) { %>
+            <a href="/admin/drivers" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'drivers' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-id-card text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">إدارة الكباتن</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('clients')) { %>
+            <a href="/admin/clients" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'clients' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-users text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">إدارة الزبائن</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('orders')) { %>
+            <a href="/admin/orders" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'orders' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-route text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">تتبع الرحلات حياً</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('finance')) { %>
+            <a href="/admin/finance" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'finance' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-wallet text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">الخزينة والمالية</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('notifications')) { %>
+            <a href="/admin/notifications" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'notifications' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-bell text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">مركز الإشعارات</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('settings')) { %>
+            <a href="/admin/settings" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'settings' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-gear text-base w-5 text-center"></i>
+                <span style="font-family: 'Cairo', sans-serif;">إعدادات النظام</span>
+            </a>
+            <% } %>
+
+            <% if (activePermissions.includes('tickets')) { %>
+            <a href="/admin/tickets" class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-150 <%= activePage === 'tickets' ? 'text-black bg-[#FF6B00] font-bold shadow-lg shadow-[#FF6B00]/20' : 'text-gray-400 hover:text-white hover:bg-[#111111] border border-transparent hover:border-[#2A2A2A]' %>">
+                <i class="fa-solid fa-ticket text-base w-5 text-center"></i>
+                <div class="flex items-center justify-between w-full">
+                    <span style="font-family: 'Cairo', sans-serif;">تذاكر الدعم الفني</span>
+                    <% if (typeof openTicketsCount !== 'undefined' && openTicketsCount > 0) { %>
+                        <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse"><%= openTicketsCount %></span>
+                    <% } %>
+                </div>
+            </a>
+            <% } %>
+        </nav>
+    </div>
+
+    <!-- بطاقة هوية وعرض رتبة الآدمن بالأسفل -->
+    <div class="p-4 border-t border-[#2A2A2A] bg-[#141414]">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-full bg-[#2A2A2A] flex items-center justify-center text-gray-300 border border-[#333333]">
+                <i class="fa-solid fa-user-shield text-xs"></i>
+            </div>
+            <div class="truncate">
+                <p class="text-xs font-semibold text-white truncate" style="font-family: 'Cairo', sans-serif;"><%= typeof adminName !== 'undefined' ? adminName : 'المالك الرئيسي' %></p>
+                <span class="text-[10px] text-green-400 font-medium" style="font-family: 'Cairo', sans-serif;">
+                    <% if (typeof adminRole !== 'undefined') { %>
+                        <%= adminRole.includes('management_officer') ? 'المدير العام 👑' : 'مشرف الرادار المركزي' %>
+                    <% } else { %>
+                        فريق الإدارة العليا
+                    <% } %>
+                </span>
+            </div>
+        </div>
+        <a href="/admin/logout" class="block w-full text-center py-2 text-xs font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all" style="font-family: 'Cairo', sans-serif;">
+            <i class="fa-solid fa-power-off ml-1 text-[10px]"></i> تسجيل خروج آمن
+        </a>
+    </div>
+</div>
+
+<!-- 🔥 [إصلاح الهامش والهيكلة]: نفتح وسم الـ content ونزوده بحصانة الهامش الأيمن الكامل ومقاومة التداخل لقراءة الـ RTL بشكل نظيف -->
+<div class="mr-64 p-8 w-[calc(100%-16rem)] relative min-h-screen">

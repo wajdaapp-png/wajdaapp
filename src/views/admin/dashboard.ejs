@@ -1,0 +1,198 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">الكباتن المتصلين الآن</p>
+                    <h3 id="live-drivers" class="text-2xl font-bold text-white mt-2"><%= stats.activeDrivers %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-car-rear text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-green-400">
+                <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i>
+                <span>رادار الكباتن حركي</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">رحلات اليوم الناجحة</p>
+                    <h3 id="live-trips" class="text-2xl font-bold text-white mt-2"><%= stats.pendingOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>مزامنة الأرشيف لـ 24 ساعة سليمة</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">طلبات قيد المعالجة</p>
+                    <h3 id="live-orders" class="text-2xl font-bold text-[#FF6B00] mt-2"><%= stats.pendingOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-yellow-500 border border-[#2A2A2A]">
+                    <i id="live-spinner" class="fa-solid fa-spinner text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-yellow-500">
+                <i class="fa-solid fa-circle-dot"></i>
+                <span>تحديث فوري مباشر حياً</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">صندوق العمولات اليومي</p>
+                    <h3 id="live-earnings" class="text-2xl font-bold text-white mt-2"><%= stats.todayEarnings %> د.ج</h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-vault text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>نسبة الاقتطاع المعتمدة 10%</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        <div class="lg:col-span-2 bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-file-invoice-dollar text-[#FF6B00]"></i>
+                    سجل الفواتير والتدفقات المالية الأخيرة (Live)
+                </h3>
+                <span class="text-[10px] bg-[#111111] border border-[#222] px-2 py-1 rounded-md text-green-400">محدث تلقائياً</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs text-gray-300">
+                    <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                        <tr>
+                            <th class="py-3 px-4">رقم الفاتورة</th>
+                            <th class="py-3 px-4">النوع</th>
+                            <th class="py-3 px-4">سعر الرحلة</th>
+                            <th class="py-3 px-4 text-[#FF6B00]">عمولة المنصة</th>
+                            <th class="py-3 px-4 text-green-400">صافي الكابتن</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-invoices-body">
+                        <% stats.recentInvoices.forEach(inv => { %>
+                            <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                                <td class="py-3 px-4 font-mono text-gray-400"><%= inv.invoice_no %></td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2 py-0.5 rounded text-[10px] <%= inv.order_type === 'shopping' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400' %>">
+                                        <%= inv.order_type %>
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-white"><%= inv.total_invoice_amount %> د.ج</td>
+                                <td class="py-3 px-4 font-bold text-[#FF6B00]"><%= inv.total_platform_earnings %> د.ج</td>
+                                <td class="py-3 px-4 text-green-400"><%= inv.driver_net_profit %> د.ج</td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6 flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-chart-pie text-[#FF6B00]"></i>
+                    تحليل حجم طلبات الخدمات
+                </h3>
+                <p class="text-[10px] text-gray-500" style="font-family: 'Cairo', sans-serif;">مقارنة نسب الأداء بين التسوق والتوصيل</p>
+            </div>
+            
+            <div class="w-full max-w-[200px] mx-auto my-4">
+                <canvas id="orderTypesChart"></canvas>
+            </div>
+            
+            <div class="text-[10px] text-gray-400 border-t border-[#2A2A2A] pt-3 text-center" style="font-family: 'Cairo', sans-serif;">
+                يتم التحديث حياً بناءً على فواتير النظام
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const socket = io();
+
+    // 1. تهيئة الرسم البياني الدائري الفخم بالـ Dark Mode
+    const ctx = document.getElementById('orderTypesChart').getContext('2d');
+    
+    // فك تشفير البيانات الأولية القادمة من الباكند للـ Chart
+    const initialData = <%- JSON.stringify(stats.orderTypes) %>;
+    const labels = initialData.map(item => item.order_type);
+    const counts = initialData.map(item => parseInt(item.count));
+
+    const orderChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: ['#FF6B00', '#1E40AF', '#10B981'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            plugins: { legend: { display: true, labels: { color: '#888888', font: { family: 'Cairo', size: 10 } } } },
+            cutout: '75%'
+        }
+    });
+
+    // 2. الاستماع الفوري للـ Socket لتحديث الأرقام والجدول حياً بدون ريفراش!
+    socket.on('dashboard_stats_update', (liveData) => {
+        // تحديث الأعداد
+        document.getElementById('live-drivers').innerText = liveData.activeDrivers;
+        document.getElementById('live-trips').innerText = liveData.pendingOrders; 
+        document.getElementById('live-orders').innerText = liveData.pendingOrders; 
+        document.getElementById('live-earnings').innerText = liveData.todayEarnings + ' د.ج';
+
+        // تحديث أسطر جدول الفواتير الحية ديناميكياً
+        const invoicesBody = document.getElementById('live-invoices-body');
+        if (invoicesBody && liveData.recentInvoices) {
+            let html = '';
+            liveData.recentInvoices.forEach(inv => {
+                const badgeColor = inv.order_type === 'shopping' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400';
+                html += `
+                    <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                        <td class="py-3 px-4 font-mono text-gray-400">${inv.invoice_no}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${badgeColor}">${inv.order_type}</span>
+                        </td>
+                        <td class="py-3 px-4 text-white">${inv.trip_price} د.ج</td>
+                        <td class="py-3 px-4 font-bold text-[#FF6B00]">${inv.total_platform_earnings} د.ج</td>
+                        <td class="py-3 px-4 text-green-400">${inv.driver_net_profit} د.ج</td>
+                    </tr>
+                `;
+            });
+            invoicesBody.innerHTML = html;
+        }
+
+        // تحديث بيانات الرسم البياني حياً إذا تغيرت الأحجام
+        if (liveData.orderTypes) {
+            orderChart.data.labels = liveData.orderTypes.map(item => item.order_type);
+            orderChart.data.datasets[0].data = liveData.orderTypes.map(item => parseInt(item.count));
+            orderChart.update();
+        }
+    });
+</script>
+
+<%- include('./partials/footer') %>

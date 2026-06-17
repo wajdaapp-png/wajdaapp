@@ -1,0 +1,52 @@
+<!-- views/driver/login.ejs -->
+<%- include('partials/header', { title: 'تسجيل دخول الكباتن | واجدة' }) %>
+
+<div class="flex-grow flex items-center justify-center px-4 py-16">
+    <div class="max-w-md w-full bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl transition-all duration-300 hover:border-kOrange/20">
+        
+        <!-- شعار المنصة -->
+        <div class="text-center mb-8">
+            <span class="text-4xl">🔐</span>
+            <h1 class="text-2xl font-black text-white mt-3 mb-1">بوابة كباتن واجدة</h1>
+            <p class="text-xs text-kMuted">أدخل رقم الهاتف أو البريد الإلكتروني لفتح حسابك المالي</p>
+        </div>
+
+        <!-- عرض رسائل الخطأ القادمة من السيرفر -->
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="mb-6 p-4 bg-red-900/20 border border-red-500/40 text-red-400 rounded-xl text-xs font-semibold flex items-center gap-2 animate-shake">
+                <span>🚨</span>
+                <p><%= error %></p>
+            </div>
+        <% } %>
+
+        <!-- الاستمارة (Form) المتوافقة مع الكنترولر -->
+        <form action="/driver/login" method="POST" class="space-y-5">
+            
+            <!-- حقل المعرّف (الهاتف أو الإيميل) -->
+            <div>
+                <label for="uid" class="block text-xs font-bold text-kMuted mb-2 mr-1">رقم الهاتف أو البريد الإلكتروني</label>
+                <input type="text" id="uid" name="uid" required placeholder="0661XXXXXX أو email@domain.com" 
+                    class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-xs font-mono outline-none transition-all duration-200 focus:border-kOrange">
+            </div>
+
+            <!-- حقل كلمة المرور -->
+            <div>
+                <div class="flex items-center justify-between mb-2 px-1">
+                    <label for="password" class="block text-xs font-bold text-kMuted">كلمة المرور السريّة</label>
+                    <a href="#" class="text-[10px] text-kMuted hover:text-kOrange transition-colors">نسيت كلمة المرور؟</a>
+                </div>
+                <input type="password" id="password" name="password" required placeholder="••••••••" 
+                    class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-xs outline-none transition-all duration-200 focus:border-kOrange">
+            </div>
+
+            <!-- زر الإرسال وبث الجلسة -->
+            <button type="submit" 
+                class="w-full bg-kOrange hover:bg-orange-600 text-white font-bold text-xs py-3 px-4 rounded-xl shadow-lg shadow-kOrange/10 transition-all duration-200 transform active:scale-[0.98] mt-2">
+                تسجيل الدخول الآمن 🚀
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

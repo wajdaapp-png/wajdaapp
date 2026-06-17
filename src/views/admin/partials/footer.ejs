@@ -1,0 +1,11 @@
+</body>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString('ar-DZ') + ' | ' + now.toLocaleDateString('ar-DZ');
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>

@@ -1,0 +1,149 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي الزبائن المسجلين</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= clientsStats.totalClients %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-users text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>نمو مستمر في قاعدة المستخدمين</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">المتصلين الآن (أونلاين)</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= clientsStats.onlineClients %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-signal text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-green-400">
+                <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i>
+                <span>يتصفحون التطبيق حالياً</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">الحسابات الموقوفة</p>
+                    <h3 class="text-2xl font-bold text-red-400 mt-2"><%= clientsStats.bannedClients %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-red-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-user-slash text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-red-400">
+                <span>موقوفين إدارياً</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-address-book text-[#FF6B00]"></i>
+                    قاعدة بيانات ومراقبة الزبائن
+                </h3>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">التحكم في حسابات المستخدمين، مراجعة المحافظ، وإجراء الحظر الفوري</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs text-gray-300">
+                <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                    <tr>
+                        <th class="py-3 px-4">الزبون</th>
+                        <th class="py-3 px-4">رقم الهاتف</th>
+                        <th class="py-3 px-4">البريد الإلكتروني</th>
+                        <th class="py-3 px-4">المدينة الحالية</th>
+                        <th class="py-3 px-4">الحالة</th>
+                        <th class="py-3 px-4">رصيد المحفظة</th>
+                        <th class="py-3 px-4 text-center">إجراءات التحكم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% clients.forEach(client => { %>
+                        <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="http://192.168.1.50:3000/<%= client.avatar_url %>" alt="Avatar" class="w-8 h-8 rounded-full bg-[#2A2A2A]>
+                                    <div>
+                                        <p class="text-white font-semibold"><%= client.name %></p>
+                                        <p class="text-[10px] text-gray-500">ID: <%= client.id %></p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-gray-400"><%= client.phone || 'لا يوجد' %></td>
+                            <td class="py-3 px-4 text-gray-400"><%= client.email %></td>
+                            <td class="py-3 px-4 text-gray-300"><%= client.current_city || 'غير محددة' %></td>
+                            <td class="py-3 px-4">
+                                <% if(client.status === 'banned') { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> محظور
+                                    </span>
+                                <% } else { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> نشط
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-4 text-white font-semibold"><%= client.wallet_balance %> د.ج</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center justify-center gap-2">
+                                    <% if(client.status === 'banned') { %>
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'activate')" class="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all" title="إلغاء الحظر">
+                                            <i class="fa-solid fa-user-check text-xs"></i>
+                                        </button>
+                                    <% } else { %>
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'ban')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all" title="حظر الحساب">
+                                            <i class="fa-solid fa-user-slash text-xs"></i>
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // وظيفة سريعة لإرسال طلب تغيير حالة الزبون (حظر / تفعيل) عبر الـ API
+    function toggleClientStatus(clientId, action) {
+        const confirmMessage = action === 'ban' ? 'هل أنت متأكد من حظر هذا الزبون؟' : 'هل تريد إعادة تفعيل حساب الزبون؟';
+        
+        if (confirm(confirmMessage)) {
+            fetch(`/admin/clients/toggle-status/${clientId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.reload(); // إعادة تحميل الصفحة لتحديث البيانات
+                } else {
+                    alert('حدث خطأ أثناء تنفيذ الإجراء: ' + data.message);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+    }
+</script>
+
+<%- include('./partials/footer') %>

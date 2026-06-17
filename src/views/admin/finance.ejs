@@ -1,0 +1,312 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">حجم المعاملات الإجمالي (السيولة)</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= financeStats.totalTurnover %> د.ج</h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-blue-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-money-bill-transfer text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>إجمالي المدفوعات من كافة الرحلات</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">صندوق عمولات المنصة الصافي</p>
+                    <h3 class="text-2xl font-bold text-[#FF6B00] mt-2"><%= financeStats.totalPlatformCut %> د.ج</h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-vault text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-green-400">
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] mr-1"></i>
+                <span>صافي أرباح النظام المجمعة</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي مستحقات الكباتن الصافية</p>
+                    <h3 class="text-2xl font-bold text-green-400 mt-2"><%= financeStats.totalDriversCut %> د.ج</h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-hand-holding-dollar text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>المبالغ المحولة لمحافظ السائقين</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">عدد الفواتير الصادرة</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= financeStats.totalInvoicesCount %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-purple-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-file-invoice text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>عمليات مالية مكتملة ومؤرشفة</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6 h-fit order-last lg:order-first">
+            <div class="border-b border-[#2A2A2A]/60 pb-4 mb-5">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-percent text-[#FF6B00]"></i>
+                    إعدادات الضرائب والرسوم العامة
+                </h3>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">تحديث قيم ونسب الاقتطاع المباشر من الرحلات حياً</p>
+            </div>
+
+            <form id="taxSettingsForm" class="space-y-4 text-right">
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-2" style="font-family: 'Cairo', sans-serif;">ضريبة المنصة المستقطعة من الكابتن *</label>
+                    <div class="relative">
+                        <input type="number" id="driver_tax" step="0.01" required value="<%= sysSettings.driver_tax %>" class="w-full bg-[#111111] border border-[#2A2A2A] text-white font-mono text-xs rounded-xl pr-4 pl-12 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                        <span class="absolute left-4 top-3.5 text-gray-500 font-mono text-xs">%</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-2" style="font-family: 'Cairo', sans-serif;">الخدمة الثابتة المضافة على الزبون *</label>
+                    <div class="relative">
+                        <input type="number" id="client_fee" step="0.01" required value="<%= sysSettings.client_fee %>" class="w-full bg-[#111111] border border-[#2A2A2A] text-white font-mono text-xs rounded-xl pr-4 pl-12 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                        <span class="absolute left-4 top-3.5 text-gray-500 text-[10px]" style="font-family: 'Cairo', sans-serif;">د.ج</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-medium text-gray-400 mb-2" style="font-family: 'Cairo', sans-serif;">أدنى سعر لأي رحلة توصيل في النظام *</label>
+                    <div class="relative">
+                        <input type="number" id="min_price" step="0.01" required value="<%= sysSettings.min_price %>" class="w-full bg-[#111111] border border-[#2A2A2A] text-white font-mono text-xs rounded-xl pr-4 pl-12 py-3 focus:outline-none focus:border-[#FF6B00] transition-all">
+                        <span class="absolute left-4 top-3.5 text-gray-500 text-[10px]" style="font-family: 'Cairo', sans-serif;">د.ج</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#FF6B00] hover:bg-[#e05e00] text-black font-bold text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 pt-4 mt-6 shadow-lg shadow-[#FF6B00]/10" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-floppy-disk text-sm"></i>
+                    تحديث وحفظ التعديلات المالية
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6 lg:col-span-2">
+            <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6 pb-6 border-b border-[#2A2A2A]/60">
+                <div>
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                        <i class="fa-solid fa-receipt text-[#FF6B00]"></i>
+                        سجل الفواتير والتدفقات المالية التفصيلي
+                    </h3>
+                    <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">مراقبة حية وحصرية لأسعار الرحلات وتوزيع النسب بين النظام والسائقين</p>
+                </div>
+                
+                <div class="relative w-full xl:w-72">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="invoiceSearchInput" placeholder="ابحث برقم الفاتورة، اسم الزبون، أو الكابتن..." class="w-full bg-[#111111] border border-[#2A2A2A] text-white text-xs rounded-xl pr-9 pl-4 py-2.5 placeholder-gray-600 focus:outline-none focus:border-[#FF6B00] transition-all" style="font-family: 'Cairo', sans-serif;">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-xs text-gray-300">
+                    <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                        <tr>
+                            <th class="py-3 px-4">رقم الفاتورة</th>
+                            <th class="py-3 px-4">نوع الخدمة</th>
+                            <th class="py-3 px-4">الزبون</th>
+                            <th class="py-3 px-4">الكابتن</th>
+                            <th class="py-3 px-4">سعر الرحلة المعروض</th>
+                            <th class="py-3 px-4 text-[#FF6B00]">عمولة المنصة</th>
+                            <th class="py-3 px-4 text-green-400">صافي الكابتن</th>
+                            <th class="py-3 px-4">الإجمالي المدفوع</th>
+                            <th class="py-3 px-4">التاريخ والوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                        <% transactions.forEach(tx => { %>
+                            <tr class="invoice-row border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                                <td class="py-3 px-4 font-mono text-gray-400 search-target-no"><%= tx.invoice_no %></td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2 py-0.5 rounded text-[10px] <%= tx.order_type === 'shopping' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400' %>">
+                                        <%= tx.order_type === 'shopping' ? 'تسوق' : 'توصيل' %>
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-gray-300 font-medium search-target-client"><%= tx.client_name || 'زبون مجهول' %></td>
+                                <td class="py-3 px-4 text-gray-300 font-medium search-target-driver"><%= tx.driver_name || 'سائق مجهول' %></td>
+                                <td class="py-3 px-4 text-gray-400"><%= tx.trip_price %> د.ج</td>
+                                <td class="py-3 px-4 font-bold text-[#FF6B00]"><%= tx.platform_share %> د.ج</td>
+                                <td class="py-3 px-4 font-bold text-green-400"><%= tx.driver_share %> د.ج</td>
+                                <td class="py-3 px-4 text-white font-semibold"><%= tx.total_amount %> د.ج</td>
+                                <td class="py-3 px-4 font-mono text-gray-500 text-[11px]">
+                                    <%= new Date(tx.created_at).toLocaleString('ar-DZ', { hour12: true }) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between mt-6 pt-4 border-t border-[#2A2A2A]/40 text-xs">
+                <div class="text-gray-500" style="font-family: 'Cairo', sans-serif;">
+                    عرض <span id="showingCount" class="text-white font-semibold">0</span> من إجمالي <span id="totalCount" class="text-white font-semibold">0</span> فواتير
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button id="btnPrev" onclick="prevPage()" class="px-3 py-2 bg-[#111111] border border-[#2A2A2A] hover:border-[#FF6B00] text-gray-400 hover:text-white rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1.5" style="font-family: 'Cairo', sans-serif;">
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        السابق
+                    </button>
+                    
+                    <div id="pageNumbers" class="flex items-center gap-1"></div>
+
+                    <button id="btnNext" onclick="nextPage()" class="px-3 py-2 bg-[#111111] border border-[#2A2A2A] hover:border-[#FF6B00] text-gray-400 hover:text-white rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1.5" style="font-family: 'Cairo', sans-serif;">
+                        التالي
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 📩 معالجة حفظ وتحديث إعدادات الضرائب والرسوم حياً دون تحديث الصفحة
+    document.getElementById('taxSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> جاري مزامنة وحفظ البيانات...`;
+
+        const payload = {
+            driver_tax: parseFloat(document.getElementById('driver_tax').value),
+            client_fee: parseFloat(document.getElementById('client_fee').value),
+            min_price: parseFloat(document.getElementById('min_price').value)
+        };
+
+        fetch('/admin/finance/update-taxes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                alert('تمت مزامنة وحفظ المتغيرات المالية الجديدة مع قاعدة البيانات بنجاح ⚙️✅');
+            } else {
+                alert(data.message || 'حدث خطأ غير متوقع أثناء محاولة تعديل البيانات المالية.');
+            }
+        })
+        .catch(err => {
+            console.error('Error updates:', err);
+            alert('خطأ في الاتصال بالخادم.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
+    });
+
+    // 🕹️ كود معالجة نظام الفلترة والبحث الفوري وتقسيم الجدول (Pagination)
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    let filteredRows = [];
+
+    const searchInput = document.getElementById('invoiceSearchInput');
+    const tableRows = Array.from(document.querySelectorAll('.invoice-row'));
+    const showingCount = document.getElementById('showingCount');
+    const totalCount = document.getElementById('totalCount');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const pageNumbersContainer = document.getElementById('pageNumbers');
+
+    function filterInvoices() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        
+        filteredRows = tableRows.filter(row => {
+            const invoiceNo = row.querySelector('.search-target-no').textContent.toLowerCase();
+            const clientName = row.querySelector('.search-target-client').textContent.toLowerCase();
+            const driverName = row.querySelector('.search-target-driver').textContent.toLowerCase();
+            
+            return invoiceNo.includes(searchTerm) || clientName.includes(searchTerm) || driverName.includes(searchTerm);
+        });
+
+        currentPage = 1;
+        updateTableDisplay();
+    }
+
+    function updateTableDisplay() {
+        tableRows.forEach(row => row.style.display = 'none');
+
+        const totalFiltered = filteredRows.length;
+        const totalPages = Math.ceil(totalFiltered / rowsPerPage) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        const endIndex = Math.min(startIndex + rowsPerPage, totalFiltered);
+
+        for (let i = startIndex; i < endIndex; i++) {
+            if (filteredRows[i]) filteredRows[i].style.display = '';
+        }
+
+        showingCount.textContent = totalFiltered === 0 ? 0 : `${startIndex + 1}-${endIndex}`;
+        totalCount.textContent = totalFiltered;
+
+        btnPrev.disabled = currentPage === 1;
+        btnNext.disabled = currentPage === totalPages;
+
+        renderPageNumbers(totalPages);
+    }
+
+    function renderPageNumbers(totalPages) {
+        pageNumbersContainer.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            pageBtn.className = `w-8 h-8 rounded-lg text-xs font-semibold transition-all font-mono ${
+                i === currentPage 
+                ? 'bg-[#FF6B00] text-black font-bold' 
+                : 'bg-[#111111] border border-[#2A2A2A] text-gray-400 hover:text-white hover:border-gray-500'
+            }`;
+            pageBtn.onclick = () => {
+                currentPage = i;
+                updateTableDisplay();
+            };
+            pageNumbersContainer.appendChild(pageBtn);
+        }
+    }
+
+    function prevPage() { if (currentPage > 1) { currentPage--; updateTableDisplay(); } }
+    function nextPage() { const totalPages = Math.ceil(filteredRows.length / rowsPerPage); if (currentPage < totalPages) { currentPage++; updateTableDisplay(); } }
+
+    searchInput.addEventListener('input', filterInvoices);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        filteredRows = [...tableRows];
+        updateTableDisplay();
+    });
+</script>
+<%- include('./partials/footer') %>

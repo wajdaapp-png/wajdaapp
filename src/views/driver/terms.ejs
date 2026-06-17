@@ -1,0 +1,68 @@
+<%- include('partials/header', { title: 'الشروط والقوانين اللوجستية | واجدة' }) %>
+
+<div class="flex-grow container mx-auto max-w-3xl px-4 py-12">
+    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-8 text-center relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-kOrange/5 rounded-full blur-2xl pointer-events-none"></div>
+        <span class="text-4xl block mb-3">📜</span>
+        <h1 class="text-2xl font-black text-white mb-2">ميثاق وشروط كباتن منصة <span class="text-kOrange">واجدة</span></h1>
+        <p class="text-xs text-kMuted leading-relaxed max-w-xl mx-auto">الدليل القانوني واللوجستي المنظم لعمليات التوصيل، الشحن، والتسوق لضمان حقوق الكابتن، الزبون، والمنصة على حد سواء.</p>
+    </div>
+
+    <div class="space-y-6 bg-kCard border border-kBorder rounded-3xl p-6 md:p-8 shadow-xl text-right">
+        
+        <div class="space-y-2 border-b border-kBorder/40 pb-4">
+            <h3 class="text-sm font-black text-kOrange flex items-center gap-2">
+                <span class="bg-kOrange/10 px-2 py-0.5 rounded-lg text-xs">01</span> أمان الطرود وفحص المحتوى
+            </h3>
+            <p class="text-xs text-white/90 leading-relaxed mr-7">
+                يلتزم الكابتن بمعاينة الطرود ظاهرياً وتجنب استلام أو نقل أي مواد محظورة قانونياً أو تشكل خطراً على السلامة العامة. الكابتن هو المسؤول الأول عن الشحنة منذ لحظة استلامها وحتى تسليمها النهائي للزبون وإغلاق الفاتورة.
+            </p>
+        </div>
+
+        <div class="space-y-2 border-b border-kBorder/40 pb-4">
+            <h3 class="text-sm font-black text-kOrange flex items-center gap-2">
+                <span class="bg-kOrange/10 px-2 py-0.5 rounded-lg text-xs">02</span> النظام المالي واقتطاع الضرائب
+            </h3>
+            <p class="text-xs text-white/90 leading-relaxed mr-7">
+                تحتسب عمولة المنصة (ضريبة المنصة المحددة) وتخصم تلقائياً من محفظة الكابتن عند إتمام الرحلة وإصدار الفاتورة الرقمية. يتم تحصيل مبالغ التوصيل كاش من الزبائن مباشرة، ويقع على عاتق الكابتن تسوية مستحقات محفظته دورياً.
+            </p>
+        </div>
+
+        <div class="space-y-2 border-b border-kBorder/40 pb-4">
+            <h3 class="text-sm font-black text-kOrange flex items-center gap-2">
+                <span class="bg-kOrange/10 px-2 py-0.5 rounded-lg text-xs">03</span> سقف مديونية المحفظة الحرج
+            </h3>
+            <p class="text-xs text-white/90 leading-relaxed mr-7">
+                لكل كابتن حد أقصى مسموح به للمديونية (<span class="text-red-400 font-bold">max_debt_limit</span>). في حال تجاوز رصيد المحفظة بالسالب هذا السقف، سيقوم النظام تلقائياً وبشكل فوري بحجب رادار الطلبات الحية عن الكابتن حتى يتم شحن المحفظة وتسوية الرصيد.
+            </p>
+        </div>
+
+        <div class="space-y-2 border-b border-kBorder/40 pb-4">
+            <h3 class="text-sm font-black text-kOrange flex items-center gap-2">
+                <span class="bg-kOrange/10 px-2 py-0.5 rounded-lg text-xs">04</span> مطابقة البيانات والوثائق القانونية
+            </h3>
+            <p class="text-xs text-white/90 leading-relaxed mr-7">
+                يجب أن تكون رخصة السياقة، ترقيم المركبة، والبطاقة الرمادية المرفوعة مطابقة للواقع تماماً. أي تلاعب بالبيانات أو مشاركة الحساب مع سائق آخر تؤدي إلى تجميد الحساب الفوري وحظر الهوية الرقمية بشكل نهائي (Banned).
+            </p>
+        </div>
+
+        <div class="space-y-2 pb-2">
+            <h3 class="text-sm font-black text-kOrange flex items-center gap-2">
+                <span class="bg-kOrange/10 px-2 py-0.5 rounded-lg text-xs">05</span> آلية تقديم عروض الأسعار (المزايدة)
+            </h3>
+            <p class="text-xs text-white/90 leading-relaxed mr-7">
+                الأسعار المقترحة بالرادار هي أسعار استرشادية، ويحق للكابتن تقديم عرض مالي يتناسب مع المسافة ونوع المركبة. إلغاء الرحلة بعد قبول العرض من طرف الزبون بدون سبب قاهر يعرض تقييم الكابتن للهبوط والمساءلة اللوجستية.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="mt-8 flex justify-center">
+        <button onclick="window.history.back();" 
+            class="bg-kBg border border-kBorder hover:border-kOrange/50 text-white font-bold text-xs py-3 px-8 rounded-xl transition-all duration-200 shadow-lg transform active:scale-95 flex items-center gap-2">
+            🔙 العودة لصفحة التسجيل والموافقة
+        </button>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

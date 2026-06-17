@@ -1,0 +1,249 @@
+<%- include('partials/header', { title: title }) %>
+<%- include('partials/sidebar') %>
+
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h1 class="text-2xl font-bold text-white" style="font-family: 'Cairo', sans-serif;">مركز تذاكر الدعم والنزاعات</h1>
+        <p class="text-xs text-[#888888] mt-1" style="font-family: 'Cairo', sans-serif;">إدارة شكاوى الكباتن، نزاعات المحفظة المالية، والمشاكل التقنية للرادار.</p>
+    </div>
+</div>
+
+<!-- 📊 بطاقات الإحصائيات السريعة -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl flex items-center justify-between">
+        <div>
+            <span class="text-xs text-[#888888] font-bold">تذاكر معلقة وقيد الانتظار</span>
+            <h3 class="text-2xl font-black text-[#FF6B00] mt-1">
+                <%= tickets.filter(t => t.status === 'open' || t.status === 'pending').length %> تذكرة
+            </h3>
+        </div>
+        <div class="w-12 h-12 bg-[#FF6B00]/10 rounded-xl flex items-center justify-center text-[#FF6B00] text-xl">
+            <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl flex items-center justify-between">
+        <div>
+            <span class="text-xs text-[#888888] font-bold">الحالات الحرجة (عالية الأهمية)</span>
+            <h3 class="text-2xl font-black text-red-500 mt-1">
+                <%= tickets.filter(t => t.priority === 'high' && t.status !== 'closed').length %> شكاوى
+            </h3>
+        </div>
+        <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500 text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl flex items-center justify-between">
+        <div>
+            <span class="text-xs text-[#888888] font-bold">إجمالي التذاكر المؤرشفة</span>
+            <h3 class="text-2xl font-black text-green-400 mt-1">
+                <%= tickets.length %> تذكرة
+            </h3>
+        </div>
+        <div class="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center text-green-400 text-xl">
+            <i class="fa-solid fa-box-archive"></i>
+        </div>
+    </div>
+</div>
+
+<!-- 🔥 [شريط الفلترة الجديد]: لوحة تحكم التصفية الذكية السريعة -->
+<div class="bg-[#1C1C1C] border border-[#2A2A2A] p-4 rounded-2xl mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+        <span class="text-xs font-bold text-gray-400 ml-2"><i class="fa-solid fa-filter text-[#FF6B00]"></i> تصفية بحسب:</span>
+        
+        <!-- فلتر الحالة -->
+        <select id="filter-status" onchange="filterTickets()" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2 outline-none focus:border-[#FF6B00] cursor-pointer transition-colors">
+            <option value="all">جميع الحالات</option>
+            <option value="open">مفتوحة</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="closed">مغلقة وحلّت</option>
+        </select>
+
+        <!-- فلتر الأولوية -->
+        <select id="filter-priority" onchange="filterTickets()" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2 outline-none focus:border-[#FF6B00] cursor-pointer transition-colors">
+            <option value="all">جميع الأولويات</option>
+            <option value="high">حرجة جداً</option>
+            <option value="medium">متوسطة</option>
+            <option value="low">عادية</option>
+        </select>
+
+        <!-- فلتر نوع الحساب -->
+        <select id="filter-role" onchange="filterTickets()" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2 outline-none focus:border-[#FF6B00] cursor-pointer transition-colors">
+            <option value="all">جميع المرسلين</option>
+            <option value="driver">🚚 كباتن مسجلين</option>
+            <option value="client">📱 زبائن مسجلين</option>
+            <option value="guest">👤 زوار الموقع</option>
+        </select>
+    </div>
+
+    <!-- حقل البحث النصي السريع (رقم التذكرة أو الهاتف) -->
+    <div class="relative w-full sm:w-72">
+        <input type="text" id="search-input" onkeyup="filterTickets()" placeholder="ابحث برقم التذكرة أو الهاتف..." 
+            class="w-full bg-[#141414] border border-[#2A2A2A] focus:border-[#FF6B00] text-xs text-white rounded-xl pr-9 pl-4 py-2 outline-none transition-colors">
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-500 text-xs"></i>
+    </div>
+</div>
+
+<!-- 🎫 جدول استعراض ومعالجة التذاكر -->
+<div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl overflow-hidden shadow-2xl">
+    <div class="p-5 border-b border-[#2A2A2A] flex items-center justify-between bg-[#141414]">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🎫</span> قائمة الطلبات الواردة حياً
+        </h3>
+        <span class="text-[10px] bg-[#2A2A2A] text-gray-400 px-3 py-1 rounded-lg font-mono">آخر 50 تذكرة</span>
+    </div>
+
+    <% if (typeof tickets !== 'undefined' && tickets.length > 0) { %>
+        <div class="overflow-x-auto">
+            <table class="w-full text-right border-collapse" id="tickets-table">
+                <thead>
+                    <tr class="bg-[#141414] border-b border-[#2A2A2A] text-gray-400 text-xs font-bold">
+                        <th class="p-4">رقم التذكرة</th>
+                        <th class="p-4">بيانات مرسل الطلب</th>
+                        <th class="p-4">الموضوع الرئيسي</th>
+                        <th class="p-4">الأولوية</th>
+                        <th class="p-4">حالة الشكوى</th>
+                        <th class="p-4">تاريخ الإرسال</th>
+                        <th class="p-4 text-center">الإجراء اللوجستي</th>
+                    </tr>
+                </thead>
+                <tbody class="text-xs divide-y divide-[#2A2A2A]/40 text-gray-300">
+                    <% tickets.forEach(function(ticket) { %>
+                        <!-- 💡 قمنا بحقن بيانات الفلترة داخل وسوم data- لعزلها وفحصها برمجياً -->
+                        <tr class="ticket-row hover:bg-[#111111] transition-colors duration-150"
+                            data-status="<%= ticket.status %>"
+                            data-priority="<%= ticket.priority %>"
+                            data-role="<%= ticket.default_role %>">
+                            
+                            <td class="p-4 font-mono text-[#FF6B00] font-bold ticket-no-cell"><%= ticket.ticket_no %></td>
+                            <td class="p-4">
+                                <div class="font-semibold text-white"><%= ticket.full_name %></div>
+                                <div class="text-[10px] text-gray-400 mt-0.5 font-mono phone-cell">
+                                    📞 <%= ticket.phone %> <% if(ticket.email) { %> | ✉️ <%= ticket.email %> <% } %>
+                                </div>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded mt-1 inline-block font-bold
+                                    <%= ticket.default_role === 'driver' ? 'bg-[#FF6B00]/10 text-[#FF6B00]' : 
+                                        ticket.default_role === 'client' ? 'bg-blue-500/10 text-blue-400' : 'bg-gray-500/10 text-gray-400' %>">
+                                    <%= ticket.default_role === 'driver' ? '🚚 كابتن مسجل' : ticket.default_role === 'client' ? '📱 زبون مسجل' : '👤 زائر موقع' %>
+                                </span>
+                            </td>
+                            <td class="p-4 max-w-xs truncate text-gray-200 font-medium"><%= ticket.subject %></td>
+                            <td class="p-4">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold 
+                                    <%= ticket.priority === 'high' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 
+                                        ticket.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 
+                                        'bg-gray-500/10 text-gray-400 border border-gray-500/20' %>">
+                                    <%= ticket.priority === 'high' ? 'high' : ticket.priority === 'medium' ? 'medium' : 'low' %>
+                                    <!-- نص مرئي متناسق -->
+                                    <span class="hidden"><%= ticket.priority %></span>
+                                    <%= ticket.priority === 'high' ? 'حرجة جداً' : ticket.priority === 'medium' ? 'متوسطة' : 'عادية' %>
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold
+                                    <%= ticket.status === 'open' ? 'bg-[#FF6B00]/10 text-[#FF6B00]' : 
+                                        ticket.status === 'pending' ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-400' %>">
+                                    <%= ticket.status === 'open' ? 'مفتوحة' : ticket.status === 'pending' ? 'قيد المراجعة' : 'مغلقة وحلّت' %>
+                                </span>
+                            </td>
+                            <td class="p-4 text-gray-500 font-mono">
+                                <%= new Date(ticket.created_at).toLocaleDateString('ar-DZ') %>
+                            </td>
+                            <td class="p-4 text-center">
+                                <a href="/admin/tickets/view/<%= ticket.id %>" 
+                                   class="inline-block bg-[#2A2A2A] hover:bg-[#FF6B00] hover:text-black text-gray-300 font-bold text-[11px] py-1.5 px-3 rounded-lg transition-all shadow-md">
+                                    🔧 معالجة الرد
+                                </a>
+                            </td>
+                        </tr>
+                    <% }); %>
+                    
+                    <!-- رسالة تظهر عندما لا تطابق الفلاتر أي نتيجة -->
+                    <tr id="no-results-row" class="hidden">
+                        <td colspan="7" class="p-12 text-center text-gray-500 text-xs">
+                            ❌ لا توجد أي تذاكر تطابق خيارات التصفية الحالية.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div class="p-12 text-center">
+            <span class="text-4xl block mb-3">🎫</span>
+            <h3 class="text-sm font-bold text-white mb-1">صندوق التذاكر فارغ تماماً</h3>
+            <p class="text-xs text-gray-500 max-w-sm mx-auto leading-relaxed">لا توجد شكاوى أو نزاعات معلقة حالياً في السيرفر. خوادم ولاية بسكرة مستقرة بنسبة 100%.</p>
+        </div>
+    <% } %>
+</div>
+</div>
+
+<!-- 🧠 سكريبت الفلترة الفورية حياً ومزامنة الوقت -->
+<script>
+    // ⚙️ دالة الفلترة والفرز الحركي لحقول الجدول
+    function filterTickets() {
+        const statusFilter = document.getElementById('filter-status').value;
+        const priorityFilter = document.getElementById('filter-priority').value;
+        const roleFilter = document.getElementById('filter-role').value;
+        const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+        
+        const rows = document.querySelectorAll('.ticket-row');
+        let visibleRowsCount = 0;
+
+        rows.forEach(row => {
+            const rowStatus = row.getAttribute('data-status');
+            const rowPriority = row.getAttribute('data-priority');
+            const rowRole = row.getAttribute('data-role');
+            
+            // جلب نصوص البحث (رقم التذكرة + الهاتف)
+            const ticketNo = row.querySelector('.ticket-no-cell').textContent.toLowerCase();
+            const phoneInfo = row.querySelector('.phone-cell').textContent.toLowerCase();
+
+            // شروط الفحص المطابقة
+            const matchStatus = (statusFilter === 'all' || rowStatus === statusFilter);
+            const matchPriority = (priorityFilter === 'all' || rowPriority === priorityFilter);
+            const matchRole = (roleFilter === 'all' || rowRole === roleFilter);
+            const matchSearch = (searchQuery === '' || ticketNo.includes(searchQuery) || phoneInfo.includes(searchQuery));
+
+            if (matchStatus && matchPriority && matchRole && matchSearch) {
+                row.style.display = ''; // إظهار السطر
+                visibleRowsCount++;
+            } else {
+                row.style.display = 'none'; // إخفاء السطر
+            }
+        });
+
+        // إظهار رسالة "لا توجد نتائج" إذا اختفت كل الأسطر
+        const noResultsRow = document.getElementById('no-results-row');
+        if (noResultsRow) {
+            if (visibleRowsCount === 0 && rows.length > 0) {
+                noResultsRow.classList.remove('hidden');
+            } else {
+                noResultsRow.classList.add('hidden');
+            }
+        }
+    }
+
+function updateLiveClock() {
+    const clockElement = document.getElementById('live-clock');
+    
+    // 🛡️ فحص الأمان: لا تقم بالتعديل إلا إذا كان العنصر موجوداً فعلياً في الصفحة الحالية
+    if (clockElement) {
+        const now = new Date();
+        clockElement.innerText = now.toLocaleString('ar-DZ', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+}
+
+// تشغيل الساعة بأمان
+updateLiveClock();
+setInterval(updateLiveClock, 1000);
+</script>
+
+<%- include('partials/footer') %>

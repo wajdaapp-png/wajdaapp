@@ -1,0 +1,37 @@
+<%- include('partials/header', { title: 'واجدة | أسرع شبكة شحن وتوصيل في الزيبان' }) %>
+
+<%- include('partials/navbar') %>
+
+<div class="flex-grow flex flex-col justify-center items-center px-4 py-16 relative overflow-hidden bg-kBg">
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-kOrange/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-3xl w-full text-center space-y-8 relative z-10">
+        <div class="inline-block animate-bounce duration-1000 text-6xl select-none">📦</div>
+
+        <div class="space-y-3">
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-wide">
+                منصة <span class="text-kOrange underline decoration-wavy decoration-1">واجدة</span> اللوجستية
+            </h1>
+            <h2 class="text-lg md:text-xl font-bold text-white/90">
+                أسرع نظام لشحن الطرود والتسوق الحي في ولاية بسكرة وضواحيها 🌴
+            </h2>
+            <p class="text-xs md:text-sm text-kMuted max-w-xl mx-auto leading-relaxed">
+                نربط التجار والزبائن بأكبر شبكة كباتن محليين لتوصيل الطلبات حياً بالثانية. ميزانية مرنة، رادار ذكي للطلبات، ونظام فواتير مشفر بالكامل يضمن حقوق الجميع.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto pt-4">
+            <a href="/driver/login" 
+                class="bg-kOrange hover:bg-orange-600 text-white font-black text-sm py-4 px-6 rounded-2xl shadow-xl shadow-kOrange/10 transition-all duration-200 transform active:scale-[0.98] flex items-center justify-center gap-2">
+                🚚 بوابة كباتن واجدة
+            </a>
+
+            <a href="#" onclick="alert('📲 روابط تحميل تطبيق واجدة سيتم إطلاقها رسمياً فور انتهاء فترات الفحص الفني لقنوات الـ API!')"
+                class="bg-kCard border border-kBorder hover:border-kOrange text-white font-bold text-sm py-4 px-6 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-md">
+                📱 تحميل تطبيق الزبائن
+            </a>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

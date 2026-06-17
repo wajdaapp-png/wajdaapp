@@ -1,0 +1,136 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">رحلات جارية حياً (على الطريق)</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= ordersStats.liveActiveOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-route text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-green-400">
+                <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i>
+                <span>كباتن مع زبائن حالياً</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">طلبات معلقة (تبحث عن كابتن)</p>
+                    <h3 class="text-2xl font-bold text-yellow-500 mt-2"><%= ordersStats.pendingOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-yellow-500 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-spinner animate-spin text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-yellow-500">
+                <span>تنتظر قبول الإرسال</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي الطلبات الكلي</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= ordersStats.totalOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-folder-open text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>العدد التراكمي في الأرشيف</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">الطلبات الملغاة</p>
+                    <h3 class="text-2xl font-bold text-red-400 mt-2"><%= ordersStats.cancelledOrders %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-red-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-rectangle-xmark text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-red-400">
+                <span>ملغاة من زبائن أو كباتن</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-tower-broadcast text-[#FF6B00]"></i>
+                    غرفة المراقبة والرادار المباشر للرحلات
+                </h3>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">متابعة خطوط سير الرحلات، وتحديد أطراف العملية حياً لضمان سلامة التوصيل</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs text-gray-300">
+                <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                    <tr>
+                        <th class="py-3 px-4">رقم الطلب</th>
+                        <th class="py-3 px-4">النوع</th>
+                        <th class="py-3 px-4">الزبون</th>
+                        <th class="py-3 px-4">الكابتن المستلم</th>
+                        <th class="py-3 px-4">نقطة الانطلاق (Pickup)</th>
+                        <th class="py-3 px-4">نقطة الوصول (Dropoff)</th>
+                        <th class="py-3 px-4">حالة الرحلة</th>
+                        <th class="py-3 px-4">تاريخ ووقت الطلب</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                            <td class="py-3 px-4 font-mono text-gray-400">#<%= order.id %></td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-0.5 rounded text-[10px] <%= order.order_type === 'shopping' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400' %>">
+                                    <%= order.order_type === 'shopping' ? 'تسوق' : 'توصيل' %>
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-white font-medium"><%= order.client_name || 'زبون غير معرف' %></td>
+                            <td class="py-3 px-4 text-gray-300">
+                                <% if(order.driver_name) { %>
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-steering-wheel text-gray-500"></i> <%= order.driver_name %></span>
+                                <% } else { %>
+                                    <span class="text-yellow-500/80 bg-yellow-500/5 px-2 py-0.5 rounded text-[10px]">جاري البحث...</span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-4 text-gray-400 truncate max-w-[180px]" title="<%= order.pickup_address %>"><%= order.pickup_address || 'لم يحدد' %></td>
+                            <td class="py-3 px-4 text-gray-400 truncate max-w-[180px]" title="<%= order.dropoff_address %>"><%= order.dropoff_address || 'لم يحدد' %></td>
+                            <td class="py-3 px-4">
+                                <% if(['pending', 'searching'].includes(order.status)) { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-yellow-500/10 text-yellow-500">قيد الانتظار</span>
+                                <% } else if(['accepted', 'ongoing', 'arrived'].includes(order.status)) { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> جارية الآن
+                                    </span>
+                                <% } else if(order.status === 'completed') { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400">مكتملة وناجحة</span>
+                                <% } else { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400">ملغاة</span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-gray-500 text-[11px]">
+                                <%= new Date(order.created_at).toLocaleString('ar-DZ', { hour12: true }) %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

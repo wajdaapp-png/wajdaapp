@@ -1,0 +1,179 @@
+<%- include('./partials/header') %> 
+<%- include('./partials/sidebar') %>
+
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي الكباتن المسجلين</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= driversStats.totalDrivers %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-id-card text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
+                <span>نمو مستمر في الأسطول</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">متصل الآن (في الخدمة)</p>
+                    <h3 class="text-2xl font-bold text-white mt-2"><%= driversStats.activeDrivers %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-car-rear text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-green-400">
+                <i class="fa-solid fa-circle text-[8px] animate-ping mr-1"></i>
+                <span>مستعدين لاستقبال الطلبات</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">طلبات انضمام قيد المراجعة</p>
+                    <h3 class="text-2xl font-bold text-yellow-500 mt-2"><%= driversStats.pendingDrivers %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-yellow-500 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-user-clock text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-yellow-500">
+                <span>تتطلب مراجعة الوثائق</span>
+            </div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">الحسابات الموقوفة</p>
+                    <h3 class="text-2xl font-bold text-red-400 mt-2"><%= driversStats.bannedDrivers %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-red-400 border border-[#2A2A2A]">
+                    <i class="fa-solid fa-user-slash text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center gap-1.5 text-xs text-red-400">
+                <span>مخالفين لشروط المنصة</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
+                    <i class="fa-solid fa-users-gear text-[#FF6B00]"></i>
+                    قاعدة بيانات ومراقبة الكباتن
+                </h3>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">تعديل الصلاحيات، مراجعة الحالات، وإدارة الحظر الفوري</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs text-gray-300">
+                <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                    <tr>
+                        <th class="py-3 px-4">الكابتن</th>
+                        <th class="py-3 px-4">رقم الهاتف</th>
+                        <th class="py-3 px-4">نوع المركبة</th>
+                        <th class="py-3 px-4">رقم اللوحة</th>
+                        <th class="py-3 px-4">الحالة الحالية</th>
+                        <th class="py-3 px-4">المحفظة</th>
+                        <th class="py-3 px-4 text-center">إجراءات التحكم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% drivers.forEach(driver => { %>
+                        <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-[#2A2A2A] flex items-center justify-center text-gray-300 font-bold">
+                                        <%= driver.name.charAt(0) %>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-semibold"><%= driver.name %></p>
+                                        <p class="text-[10px] text-gray-500">ID: <%= driver.id %></p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-gray-400"><%= driver.phone %></td>
+                            <td class="py-3 px-4">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fa-solid <%= driver.vehicle_type === 'moto' ? 'fa-motorcycle text-blue-400' : 'fa-car text-purple-400' %> text-sm"></i>
+                                    <%= driver.vehicle_type === 'moto' ? 'دراجة نارية' : 'سيارة' %>
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-gray-400"><%= driver.plate_number %></td>
+                            <td class="py-3 px-4">
+                                <% if(driver.status === 'active') { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> متصل
+                                    </span>
+                                <% } else if(driver.status === 'pending') { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-yellow-500/10 text-yellow-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> معلق
+                                    </span>
+                                <% } else { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> محظور
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td class="py-3 px-4 text-white font-semibold"><%= driver.wallet_balance %> د.ج</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="/admin/drivers/edit/<%= driver.id %>" class="p-2 bg-[#111111] hover:bg-[#2A2A2A] text-gray-300 rounded-lg border border-[#2A2A2A] transition-all" title="تعديل البيانات">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </a>
+                                    
+                                    <% if(driver.status === 'banned') { %>
+                                        <button onclick="toggleDriverStatus('<%= driver.id %>', 'activate')" class="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all" title="إلغاء الحظر">
+                                            <i class="fa-solid fa-user-check text-xs"></i>
+                                        </button>
+                                    <% } else { %>
+                                        <button onclick="toggleDriverStatus('<%= driver.id %>', 'ban')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all" title="حظر الحساب">
+                                            <i class="fa-solid fa-user-slash text-xs"></i>
+                                        </button>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // وظيفة سريعة لإرسال طلب تغيير حالة السائق (حظر / تفعيل) عبر الـ API
+    function toggleDriverStatus(driverId, action) {
+        const confirmMessage = action === 'ban' ? 'هل أنت متأكد من حظر هذا الكابتن؟' : 'هل تريد إعادة تفعيل حساب الكابتن؟';
+        
+        if (confirm(confirmMessage)) {
+            fetch(`/admin/drivers/toggle-status/${driverId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    window.location.reload(); // إعادة تحميل الصفحة لتحديث البيانات الحية
+                } else {
+                    alert('حدث خطأ أثناء تنفيذ الإجراء.');
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+    }
+</script>
+
+<%- include('./partials/footer') %>

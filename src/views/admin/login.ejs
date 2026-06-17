@@ -1,0 +1,79 @@
+<%- include('./partials/header') %> 
+<div class="min-h-screen flex items-center justify-center px-4 bg-[#111111]">
+    <div class="max-w-md w-full space-y-8 bg-[#1C1C1C] p-8 rounded-3xl border border-[#2A2A2A] shadow-2xl relative overflow-hidden">
+        
+        <div class="absolute -top-10 -left-10 w-32 h-32 bg-[#FF6B00]/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-green-500/5 rounded-full blur-3xl"></div>
+
+        <div class="text-center relative">
+            <div class="inline-flex p-4 rounded-2xl bg-[#111111] border border-[#2A2A2A] mb-4 text-[#FF6B00] text-3xl shadow-inner">
+                <i class="fa-solid fa-shield-halved animate-pulse"></i>
+            </div>
+            <h2 class="text-2xl font-bold tracking-tight text-white mb-1" style="font-family: 'Cairo', sans-serif;">بوابة الإشراف والتحكم</h2>
+            <p class="text-sm text-[#888888]" style="font-family: 'Cairo', sans-serif;">منصة واجدة الرقمية الموحدة لـ إدارة الرادار</p>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-xs flex items-center gap-3 animate-shake" style="font-family: 'Cairo', sans-serif;">
+                <i class="fa-solid fa-circle-exclamation text-base"></i>
+                <p><%= error %></p>
+            </div>
+        <% } %>
+
+        <form class="mt-8 space-y-6 relative" action="/admin/login" method="POST">
+            <div class="space-y-4">
+                
+                <div>
+                    <label for="email" class="block text-xs font-semibold text-gray-300 mb-2" style="font-family: 'Cairo', sans-serif;">البريد الإلكتروني المعتمد</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#888888] text-sm">
+                            <i class="fa-regular fa-envelope"></i>
+                        </span>
+                        <input id="email" name="email" type="email" required autocomplete="email"
+                            class="block w-full pr-11 pl-4 py-3 bg-[#111111] border border-[#2A2A2A] rounded-xl text-white text-sm placeholder-[#888888] focus:outline-none focus:border-[#FF6B00] focus:ring-1 focus:ring-[#FF6B00] transition-all duration-200" 
+                            placeholder="admin@wajda.com" style="font-family: 'Cairo', sans-serif;">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-xs font-semibold text-gray-300 mb-2" style="font-family: 'Cairo', sans-serif;">كلمة المرور الأمنية</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-[#888888] text-sm">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input id="password" name="password" type="password" required autocomplete="current-password"
+                            class="block w-full pr-11 pl-4 py-3 bg-[#111111] border border-[#2A2A2A] rounded-xl text-white text-sm placeholder-[#888888] focus:outline-none focus:border-[#FF6B00] focus:ring-1 focus:ring-[#FF6B00] transition-all duration-200" 
+                            placeholder="••••••••" style="font-family: 'Cairo', sans-serif;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-xs" style="font-family: 'Cairo', sans-serif;">
+                <div class="flex items-center">
+                    <input id="remember-me" name="remember-me" type="checkbox" 
+                        class="h-4 w-4 rounded bg-[#111111] border-[#2A2A2A] text-[#FF6B00] focus:ring-[#FF6B00]/50 focus:ring-offset-0 bg-transparent transition duration-150 ease-in-out">
+                    <label for="remember-me" class="mr-2 block text-gray-400 select-none">تذكر جهازي في هذه الجلسة</label>
+                </div>
+                <div class="text-left">
+                    <a href="#" class="font-medium text-[#FF6B00]/80 hover:text-[#FF6B00] hover:underline transition-all">فقدت كلمة المرور؟</a>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" style="font-family: 'Cairo', sans-serif;"
+                    class="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-black bg-[#FF6B00] hover:bg-[#FF6B00]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6B00] shadow-lg shadow-[#FF6B00]/20 active:scale-[0.98] transition-all duration-150">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-4 text-black/60 text-xs group-hover:translate-x-1 transition-transform">
+                        <i class="fa-solid fa-arrow-left-long"></i>
+                    </span>
+                    تأكيد الهوية والولوج الموحد ✅
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('./partials/footer') %> ```
+
+---
+
+احفظ الملف الآن، وتأكد من أن السيرفر شغال. يمكنك الآن الدخول ببيانات حساب الـ Owner التجريبي المتواجد بقاعدة البيانات واختبار تشغيل الواجهة المظلمة حياً! 🚀🔥🏁🛡️💵

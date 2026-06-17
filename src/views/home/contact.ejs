@@ -1,0 +1,90 @@
+<!-- src/views/home/contact.ejs -->
+<%- include('partials/header', { title: 'الاتصال بالدعم الفني وفتح تذكرة | منصة واجدة' }) %>
+<%- include('partials/navbar') %>
+
+<div class="flex-grow container mx-auto max-w-5xl px-4 py-12 text-right">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        <!-- القسم الأيمن: استمارة إنشاء التذكرة بحقولها الجديدة -->
+        <div class="lg:col-span-2 bg-kCard border border-kBorder rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+            <div>
+                <h1 class="text-xl font-black text-white flex items-center gap-2">
+                    <span class="text-kOrange">🎫</span> فتح تذكرة دعم جديدة
+                </h1>
+                <p class="text-xs text-kMuted mt-1">يرجى إدخال بيانات التواصل معك وسيتولى فريق العمل مراجعة طلبك فوراً.</p>
+            </div>
+
+            <form action="/contact/ticket" method="POST" class="space-y-4">
+                
+                <!-- صف يحتوي على الهاتف والإيميل متجاورين -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- حقل رقم الهاتف -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2">رقم الهاتف النشط</label>
+                        <input type="tel" name="phone" placeholder="مثال: 0555XXXXXX" required
+                            class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white font-mono outline-none transition-colors">
+                    </div>
+
+                    <!-- حقل البريد الإلكتروني -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2">البريد الإلكتروني</label>
+                        <input type="email" name="email" placeholder="name@example.com" required
+                            class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white font-mono outline-none transition-colors">
+                    </div>
+                </div>
+
+                <!-- موضوع الشكوى -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">موضوع التذكرة الرئيسي</label>
+                    <input type="text" name="subject" placeholder="مثال: مشكلة تعليق رصيد المحفظة، عطل في الرادار..." required
+                        class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors">
+                </div>
+
+                <!-- درجة الأهمية -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">درجة الأهمية والخطورة</label>
+                    <select name="priority" class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors cursor-pointer">
+                        <option value="low">عادية / استفسار عام</option>
+                        <option value="medium" selected>متوسطة / مشكلة تقنية خفيفة</option>
+                        <option value="high">حرجة جداً / نزاع مالي وحظر حساب</option>
+                    </select>
+                </div>
+
+                <!-- تفاصيل المشكلة -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">شرح وتفاصيل الشكوى بالكامل</label>
+                    <textarea name="description" rows="5" placeholder="يرجى كتابة تفاصيل المشكلة بدقة (رقم الرحلة، القيمة المالية، وقت العطل)..." required
+                        class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors resize-none"></textarea>
+                </div>
+
+                <!-- زر الإرسال -->
+                <button type="submit" 
+                    class="w-full bg-kOrange hover:bg-orange-600 text-white font-black text-xs py-3.5 px-6 rounded-xl shadow-lg transition-all duration-200 transform active:scale-95 flex items-center justify-center gap-2">
+                    🚀 إرسال التذكرة لغرفة القيادة
+                </button>
+            </form>
+        </div>
+
+        <!-- القسم الأيسر: اتصالات مباشرة -->
+        <div class="space-y-4">
+            <div class="bg-kCard border border-kBorder rounded-3xl p-6 shadow-2xl">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="text-green-400">📞</span> اتصالات مباشرة
+                </h3>
+                <div class="space-y-3">
+                    <div class="p-3 bg-kBg border border-kBorder rounded-xl">
+                        <span class="text-[10px] text-kMuted block mb-0.5">البريد الإلكتروني الرسمي</span>
+                        <span class="text-xs font-mono font-bold text-kOrange">support@wajda-dz.com</span>
+                    </div>
+                    <div class="p-3 bg-kBg border border-kBorder rounded-xl">
+                        <span class="text-[10px] text-kMuted block mb-0.5">رقم الهاتف الموحد</span>
+                        <span class="text-xs font-mono font-bold text-green-400">+213 (0) 555 XX XX XX</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>
