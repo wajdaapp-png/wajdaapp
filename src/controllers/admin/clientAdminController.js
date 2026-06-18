@@ -199,7 +199,7 @@ const toggleClientStatus = async (req, res) => {
             console.log(`🛰️ [Discord Dispatch]: Assembling embed log packet for Discord Webhook...`);
             const discordEmbed = {
                 username: "Wajda Moderation Radar",
-                avatar_url: `https://getwajda.com/uploads/${clientData.avatar_url}`,
+                avatar_url: `https://getwajda.com${clientData.avatar_url}`,
                 embeds: [
                     {
                         title: "⚙️ User Account Status Updated",
@@ -216,7 +216,7 @@ const toggleClientStatus = async (req, res) => {
                         ],
                         footer: {
                             text: "Live Moderation Logs - Wajda Platform",
-                            icon_url: `https://getwajda.com/uploads/${clientData.avatar_url}`
+                            icon_url: `https://getwajda.com${clientData.avatar_url}`
                         },
                         timestamp: new Date().toISOString()
                     }
