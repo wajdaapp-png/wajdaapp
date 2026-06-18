@@ -30,6 +30,7 @@ router.get('/dashboard', adminAuthMiddleware, checkAdminPermission('dashboard'),
 router.get('/drivers', adminAuthMiddleware, checkAdminPermission('drivers'), driverAdminController.getDriversPage);
 router.post('/drivers/toggle-status/:id', adminAuthMiddleware, checkAdminPermission('drivers'), driverAdminController.toggleDriverStatus);
 router.get('/drivers/edit/:id', adminAuthMiddleware, checkAdminPermission('drivers'), driverAdminController.getEditDriverPage);
+router.post('/drivers/approve/:id',adminAuthMiddleware, checkAdminPermission('drivers'), driverAdminController.approveDriverApplication);
 
 router.get('/clients', adminAuthMiddleware, checkAdminPermission('clients'), clientAdminController.getClientsPage);
 router.post('/clients/toggle-status/:id', adminAuthMiddleware, checkAdminPermission('clients'), clientAdminController.toggleClientStatus);

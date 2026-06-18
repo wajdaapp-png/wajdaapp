@@ -66,17 +66,29 @@
     </div>
 
     <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-2xl p-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-[#2A2A2A] pb-4">
             <div>
                 <h3 class="text-sm font-bold text-white flex items-center gap-2" style="font-family: 'Cairo', sans-serif;">
                     <i class="fa-solid fa-users-gear text-[#FF6B00]"></i>
-                    قاعدة بيانات ومراقبة الكباتن
+                    منظومة إدارة كباتن واجدة
                 </h3>
-                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">تعديل الصلاحيات، مراجعة الحالات، وإدارة الحظر الفوري</p>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">إدارة الكباتن المعتمدين ومراجعة وثائق طلبات الانضمام الجديدة</p>
+            </div>
+            
+            <div class="flex bg-[#111111] p-1 rounded-xl border border-[#2A2A2A] text-xs font-bold">
+                <button onclick="switchTab('active-drivers-tab', 'apps-tab', this)" class="px-4 py-2 text-white bg-[#FF6B00] rounded-lg transition-all duration-200">
+                    الأسطول المعتمد (<%= drivers.length %>)
+                </button>
+                <button onclick="switchTab('apps-tab', 'active-drivers-tab', this)" class="px-4 py-2 text-gray-400 hover:text-white rounded-lg transition-all duration-200 flex items-center gap-2">
+                    طلبات الانضمام 
+                    <% if(pendingApps.length > 0) { %>
+                        <span class="px-1.5 py-0.5 bg-yellow-500 text-black text-[9px] rounded-full animate-pulse"><%= pendingApps.length %></span>
+                    <% } %>
+                </button>
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div id="active-drivers-tab" class="overflow-x-auto">
             <table class="w-full text-right text-xs text-gray-300">
                 <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
                     <tr>
@@ -99,26 +111,22 @@
                                     </div>
                                     <div>
                                         <p class="text-white font-semibold"><%= driver.name %></p>
-                                        <p class="text-[10px] text-gray-500">ID: <%= driver.id %></p>
+                                        <p class="text-[10px] text-gray-500">ID: <%= driver.id %> | <%= driver.working_city %></p>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-3 px-4 font-mono text-gray-400"><%= driver.phone %></td>
                             <td class="py-3 px-4">
                                 <span class="flex items-center gap-1.5">
-                                    <i class="fa-solid <%= driver.vehicle_type === 'moto' ? 'fa-motorcycle text-blue-400' : 'fa-car text-purple-400' %> text-sm"></i>
-                                    <%= driver.vehicle_type === 'moto' ? 'دراجة نارية' : 'سيارة' %>
+                                    <i class="fa-solid <%= driver.vehicle_type === 'bike' ? 'fa-bicycle text-orange-400' : driver.vehicle_type === 'motorcycle' ? 'fa-motorcycle text-blue-400' : 'fa-car text-purple-400' %> text-sm"></i>
+                                    <%= driver.vehicle_type === 'bike' ? 'دراجة هوائية' : driver.vehicle_type === 'motorcycle' ? 'دراجة نارية' : 'سيارة' %>
                                 </span>
                             </td>
                             <td class="py-3 px-4 font-mono text-gray-400"><%= driver.plate_number %></td>
                             <td class="py-3 px-4">
-                                <% if(driver.status === 'active') { %>
+                                <% if(driver.account_status === 'active') { %>
                                     <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 flex items-center gap-1 w-max">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> متصل
-                                    </span>
-                                <% } else if(driver.status === 'pending') { %>
-                                    <span class="px-2 py-0.5 rounded text-[10px] bg-yellow-500/10 text-yellow-400 flex items-center gap-1 w-max">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span> معلق
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> نشط معتمد
                                     </span>
                                 <% } else { %>
                                     <span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 flex items-center gap-1 w-max">
@@ -132,8 +140,7 @@
                                     <a href="/admin/drivers/edit/<%= driver.id %>" class="p-2 bg-[#111111] hover:bg-[#2A2A2A] text-gray-300 rounded-lg border border-[#2A2A2A] transition-all" title="تعديل البيانات">
                                         <i class="fa-solid fa-pen-to-square text-xs"></i>
                                     </a>
-                                    
-                                    <% if(driver.status === 'banned') { %>
+                                    <% if(driver.account_status === 'banned') { %>
                                         <button onclick="toggleDriverStatus('<%= driver.id %>', 'activate')" class="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all" title="إلغاء الحظر">
                                             <i class="fa-solid fa-user-check text-xs"></i>
                                         </button>
@@ -149,7 +156,111 @@
                 </tbody>
             </table>
         </div>
+
+        <div id="apps-tab" class="overflow-x-auto hidden">
+            <table class="w-full text-right text-xs text-gray-300">
+                <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
+                    <tr>
+                        <th class="py-3 px-4">صاحب الطلب</th>
+                        <th class="py-3 px-4">الهاتف والنطاق</th>
+                        <th class="py-3 px-4">المركبة والترقيم</th>
+                        <th class="py-3 px-4">مستندات الكابتن (معاينة حية للـ VPS)</th>
+                        <th class="py-3 px-4 text-center">قرار الإدارة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(pendingApps.length === 0) { %>
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-gray-500 font-medium">قهوة ممتعة يا مسؤول! لا توجد طلبات معلقة حالياً ☕✨</td>
+                        </tr>
+                    <% } %>
+                    <% pendingApps.forEach(app => { %>
+                        <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-yellow-500/10 text-yellow-500 flex items-center justify-center font-bold">
+                                        <%= app.name.charAt(0) %>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-semibold"><%= app.name %></p>
+                                        <p class="text-[10px] text-gray-500">رقم المستخدم الأصلي: <%= app.id %></p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <p class="font-mono text-gray-300"><%= app.phone %></p>
+                                <p class="text-[10px] text-gray-400 mt-0.5">🎯 <%= app.working_city %></p>
+                            </td>
+                            <td class="py-3 px-4">
+                                <p class="font-bold text-white"><%= app.vehicle_type === 'bike' ? '🚲 دراجة هوائية' : app.vehicle_type === 'motorcycle' ? '🏍️ دراجة نارية' : '🚗 سيارة/شاحنة' %></p>
+                                <p class="text-[10px] text-gray-400 font-mono mt-0.5">📟 <%= app.plate_number %></p>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-4">
+                                    <% if(app.license_image) { %>
+                                        <a href="/drivers_docs/<%= app.license_image %>" target="_blank" class="flex items-center gap-1 px-2 py-1 bg-[#222] hover:bg-[#333] border border-[#444] rounded text-[10px] text-blue-400 font-semibold transition-all">
+                                            <i class="fa-solid fa-address-card"></i> رخصة السياقة 📑
+                                        </a>
+                                    <% } %>
+                                    <% if(app.vehicle_image) { %>
+                                        <a href="/drivers_docs/<%= app.vehicle_image %>" target="_blank" class="flex items-center gap-1 px-2 py-1 bg-[#222] hover:bg-[#333] border border-[#444] rounded text-[10px] text-purple-400 font-semibold transition-all">
+                                            <i class="fa-solid fa-file-invoice"></i> البطاقة الرمادية 📄
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center justify-center">
+                                    <button onclick="approveDriver('<%= app.id %>')" class="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg transition-all flex items-center gap-1 shadow-md shadow-green-500/10">
+                                        <i class="fa-solid fa-user-plus text-[10px]"></i> قبول وترقية فوراً
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+
+<script>
+    // 💡 دالة السحر اللغوي للتبديل الفوري بين التبويبات بدون جافا سكريبت معقدة
+    function switchTab(showId, hideId, btn) {
+        document.getElementById(showId).classList.remove('hidden');
+        document.getElementById(hideId).classList.add('hidden');
+        
+        // تعديل ستايل الأزرار لتتناسق مع الوضعية النشطة
+        btn.parentElement.querySelectorAll('button').forEach(b => {
+            b.classList.remove('text-white', 'bg-[#FF6B00]');
+            b.classList.add('text-gray-400');
+        });
+        btn.classList.add('text-white', 'bg-[#FF6B00]');
+        btn.classList.remove('text-gray-400');
+    }
+
+    // دالة إرسال قبول الترقية الفورية للباكند
+    function approveDriver(userId) {
+        if(confirm('هل راجعت مستندات الكابتن وتؤكد الموافقة على منحه لوحة الرادار؟')) {
+            fetch(`/admin/drivers/approve/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert('عذراً: ' + data.message);
+                }
+            })
+            .catch(err => console.error('Error:', err));
+        }
+    }
+
+    // ... دالة toggleDriverStatus القديمة تبقى كما هي هنا ...
+</script>
 </div>
 
 <script>
