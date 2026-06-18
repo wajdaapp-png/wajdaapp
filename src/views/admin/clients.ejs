@@ -2,26 +2,24 @@
 <%- include('./partials/sidebar') %>
 
 <div class="space-y-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl hover:border-[#FF6B00]/40 transition-all duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي الزبائن المسجلين</p>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">إجمالي الزبائن</p>
                     <h3 class="text-2xl font-bold text-white mt-2"><%= clientsStats.totalClients %></h3>
                 </div>
                 <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
                     <i class="fa-solid fa-users text-lg"></i>
                 </div>
             </div>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-gray-400">
-                <span>نمو مستمر في قاعدة المستخدمين</span>
-            </div>
+            <div class="mt-4 text-xs text-gray-400 font-medium">نمو مستمر في المنصة</div>
         </div>
 
-        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl hover:border-[#FF6B00]/40 transition-all duration-300">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">المتصلين الآن (أونلاين)</p>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">المتصلين الآن</p>
                     <h3 class="text-2xl font-bold text-white mt-2"><%= clientsStats.onlineClients %></h3>
                 </div>
                 <div class="p-3 bg-[#111111] rounded-xl text-green-400 border border-[#2A2A2A]">
@@ -34,7 +32,20 @@
             </div>
         </div>
 
-        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl relative overflow-hidden group hover:border-[#FF6B00]/40 transition-all duration-300">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl hover:border-[#FF6B00]/40 transition-all duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">حسابات قيد الانتظار</p>
+                    <h3 class="text-2xl font-bold text-[#FF6B00] mt-2"><%= clientsStats.pendingClients %></h3>
+                </div>
+                <div class="p-3 bg-[#111111] rounded-xl text-[#FF6B00] border border-[#2A2A2A]">
+                    <i class="fa-solid fa-clock text-lg"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-xs text-[#FF6B00] font-medium">بانتظار المراجعة والتفعيل</div>
+        </div>
+
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] p-6 rounded-2xl hover:border-[#FF6B00]/40 transition-all duration-300">
             <div class="flex justify-between items-start">
                 <div>
                     <p class="text-xs text-[#888888] font-medium" style="font-family: 'Cairo', sans-serif;">الحسابات الموقوفة</p>
@@ -44,9 +55,7 @@
                     <i class="fa-solid fa-user-slash text-lg"></i>
                 </div>
             </div>
-            <div class="mt-4 flex items-center gap-1.5 text-xs text-red-400">
-                <span>موقوفين إدارياً</span>
-            </div>
+            <div class="mt-4 text-xs text-red-400 font-medium">موقوفين إدارياً</div>
         </div>
     </div>
 
@@ -57,12 +66,22 @@
                     <i class="fa-solid fa-address-book text-[#FF6B00]"></i>
                     قاعدة بيانات ومراقبة الزبائن
                 </h3>
-                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">التحكم في حسابات المستخدمين، مراجعة المحافظ، وإجراء الحظر الفوري</p>
+                <p class="text-[10px] text-gray-500 mt-1" style="font-family: 'Cairo', sans-serif;">التحكم في حسابات المستخدمين، مراجعة المحافظ، وإجراء الحظر والتفعيل الفوري</p>
+            </div>
+            
+            <div class="flex items-center gap-2 bg-[#111111] border border-[#2A2A2A] px-3 py-1.5 rounded-xl">
+                <span class="text-[11px] text-gray-500 font-medium"><i class="fa-solid fa-filter text-[#FF6B00] ml-1"></i> تصفية بالحالة:</span>
+                <select id="statusFilter" onchange="filterClients()" class="bg-transparent text-xs text-white border-none outline-none focus:ring-0 cursor-pointer font-medium" style="font-family: 'Cairo', sans-serif;">
+                    <option value="all" class="bg-[#1C1C1C]">الكل</option>
+                    <option value="active" class="bg-[#1C1C1C]">نشط</option>
+                    <option value="pending_verification" class="bg-[#1C1C1C]">قيد الانتظار (معلق)</option>
+                    <option value="banned" class="bg-[#1C1C1C]">محظور</option>
+                </select>
             </div>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs text-gray-300">
+            <table class="w-full text-right text-xs text-gray-300" id="clientsTable">
                 <thead class="text-gray-500 border-b border-[#2A2A2A] bg-[#111111]">
                     <tr>
                         <th class="py-3 px-4">الزبون</th>
@@ -76,10 +95,10 @@
                 </thead>
                 <tbody>
                     <% clients.forEach(client => { %>
-                        <tr class="border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all">
+                        <tr class="client-row border-b border-[#2A2A2A]/40 hover:bg-[#111111]/50 transition-all" data-status="<%= client.status %>">
                             <td class="py-3 px-4">
                                 <div class="flex items-center gap-3">
-                                    <img src="http://192.168.1.50:3000/<%= client.avatar_url %>" alt="Avatar" class="w-8 h-8 rounded-full bg-[#2A2A2A]>
+                                    <img src="http://80.75.212.163:1212/<%= client.avatar_url || 'uploads/default-avatar.png' %>" alt="Avatar" class="w-8 h-8 rounded-full bg-[#2A2A2A]" onerror="this.src='/uploads/default-avatar.png'">
                                     <div>
                                         <p class="text-white font-semibold"><%= client.name %></p>
                                         <p class="text-[10px] text-gray-500">ID: <%= client.id %></p>
@@ -94,6 +113,10 @@
                                     <span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 flex items-center gap-1 w-max">
                                         <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> محظور
                                     </span>
+                                <% } else if(client.status === 'pending_verification') { %>
+                                    <span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 flex items-center gap-1 w-max">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> قيد الانتظار
+                                    </span>
                                 <% } else { %>
                                     <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 flex items-center gap-1 w-max">
                                         <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> نشط
@@ -103,12 +126,19 @@
                             <td class="py-3 px-4 text-white font-semibold"><%= client.wallet_balance %> د.ج</td>
                             <td class="py-3 px-4">
                                 <div class="flex items-center justify-center gap-2">
-                                    <% if(client.status === 'banned') { %>
-                                        <button onclick="toggleClientStatus('<%= client.id %>', 'activate')" class="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all" title="إلغاء الحظر">
+                                    <% if(client.status === 'pending_verification') { %>
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'activate')" class="px-2.5 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all flex items-center gap-1 font-medium text-[10px]" title="موافقة وتفعيل الحساب">
+                                            <i class="fa-solid fa-user-check"></i> تفعيل الحساب
+                                        </button>
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'ban')" class="p-1.5 bg-red-500/5 hover:bg-red-500/10 text-red-400 rounded-lg transition-all" title="رفض وحظر الحساب">
+                                            <i class="fa-solid fa-user-xmark"></i>
+                                        </button>
+                                    <% } else if(client.status === 'banned') { %>
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'activate')" class="p-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-all" title="إلغاء الحظر وإعادة التنشيط">
                                             <i class="fa-solid fa-user-check text-xs"></i>
                                         </button>
                                     <% } else { %>
-                                        <button onclick="toggleClientStatus('<%= client.id %>', 'ban')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all" title="حظر الحساب">
+                                        <button onclick="toggleClientStatus('<%= client.id %>', 'ban')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-all" title="حظر الحساب الأمني">
                                             <i class="fa-solid fa-user-slash text-xs"></i>
                                         </button>
                                     <% } %>
@@ -123,10 +153,26 @@
 </div>
 
 <script>
-    // وظيفة سريعة لإرسال طلب تغيير حالة الزبون (حظر / تفعيل) عبر الـ API
-    function toggleClientStatus(clientId, action) {
-        const confirmMessage = action === 'ban' ? 'هل أنت متأكد من حظر هذا الزبون؟' : 'هل تريد إعادة تفعيل حساب الزبون؟';
+    // 🎯 دالة الفلترة السريعة من خلال واجهة المستخدم دون الحاجة لإعادة تحميل السيرفر
+    function filterClients() {
+        const filterValue = document.getElementById('statusFilter').value;
+        const rows = document.querySelectorAll('.client-row');
         
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            if (filterValue === 'all' || status === filterValue) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleClientStatus(clientId, action) {
+        let confirmMessage = 'هل أنت متأكد من تنفيذ هذا الإجراء؟';
+        if (action === 'ban') confirmMessage = 'هل أنت متأكد من حظر هذا الزبون ومنعه من دخول رادار المنصة؟';
+        if (action === 'activate') confirmMessage = 'هل تريد الموافقة وتنشيط حساب هذا الزبون ليكون فعالاً فوراً؟';
+
         if (confirm(confirmMessage)) {
             fetch(`/admin/clients/toggle-status/${clientId}`, {
                 method: 'POST',
@@ -136,7 +182,7 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    window.location.reload(); // إعادة تحميل الصفحة لتحديث البيانات
+                    window.location.reload(); 
                 } else {
                     alert('حدث خطأ أثناء تنفيذ الإجراء: ' + data.message);
                 }

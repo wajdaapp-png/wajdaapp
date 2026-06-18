@@ -2,17 +2,18 @@ const db = require('../../config/db');
 
 const getClientsPage = async (req, res) => {
     try {
-       // 1. استعلام الإحصائيات (يشمل فقط الحسابات التي دورها 'both' أو 'client')
+        // 1. استعلام الإحصائيات (يشمل فقط الحسابات التي دورها 'both' أو 'client')
         const statsQuery = `
             SELECT 
                 COUNT(*) AS total_clients,
                 COUNT(*) FILTER (WHERE is_online = true) AS online_clients,
-                COUNT(*) FILTER (WHERE account_status = 'banned') AS banned_clients
+                COUNT(*) FILTER (WHERE account_status = 'banned') AS banned_clients,
+                COUNT(*) FILTER (WHERE account_status = 'pending_verification') AS pending_clients
             FROM users 
             WHERE default_role IN ('both', 'client');
         `;
 
-        // 2. استعلام جلب قائمة المستخدمين للجدول (يشمل فقط 'both' و 'client')
+        // 2. استعلام جلب قائمة المستخدمين للجدول
         const clientsQuery = `
             SELECT 
                 id, 
@@ -38,11 +39,12 @@ const getClientsPage = async (req, res) => {
         const clientsStats = {
             totalClients: parseInt(stats.total_clients) || 0,
             onlineClients: parseInt(stats.online_clients) || 0,
-            bannedClients: parseInt(stats.banned_clients) || 0
+            bannedClients: parseInt(stats.banned_clients) || 0,
+            pendingClients: parseInt(stats.pending_clients) || 0
         };
 
         res.render('admin/clients', {
-            activePage: 'clients', // تفعيل الخلفية البرتقالية لزر إدارة الزبائن في السايدبار
+            activePage: 'clients', 
             clientsStats: clientsStats,
             clients: clientsResult.rows,
             adminName: req.session?.adminName || 'مدير النظام', 
@@ -55,7 +57,7 @@ const getClientsPage = async (req, res) => {
     }
 };
 
-// تحديث حالة حساب الزبون (حظر / تفعيل)
+// تحديث حالة حساب الزبون (حظر / تفعيل / تنشيط المعلق)
 const toggleClientStatus = async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; 
@@ -80,7 +82,7 @@ const toggleClientStatus = async (req, res) => {
         if (result.rowCount > 0) {
             res.json({ success: true, message: `تم تحديث حالة الحساب بنجاح` });
         } else {
-            res.status(404).json({ success: false, message: 'لم يتم العثور على المستخدم المطلوب' });
+            res.status(404).json({ success: false, message: 'لم يتم العثور على المستخدم المطلوب أو لا تملك الصلاحية لتعديله' });
         }
 
     } catch (error) {
