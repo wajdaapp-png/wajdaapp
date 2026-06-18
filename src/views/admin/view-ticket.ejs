@@ -1,0 +1,92 @@
+<%- include('partials/header', { title: title }) %>
+<%- include('partials/sidebar') %>
+
+<div class="mb-6 flex items-center gap-2">
+    <a href="/admin/tickets" class="text-xs text-gray-500 hover:text-[#FF6B00] transition-colors">🔙 العودة لمركز التذاكر</a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start text-right" style="font-family: 'Cairo', sans-serif;">
+    
+    <div class="lg:col-span-2 bg-[#1C1C1C] border border-[#2A2A2A] rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A2A2A] pb-4">
+            <div>
+                <span class="text-[10px] uppercase font-mono font-bold bg-[#FF6B00]/10 text-[#FF6B00] px-2 py-0.5 rounded">
+                    <%= ticket.ticket_no %>
+                </span>
+                <h1 class="text-lg font-black text-white mt-2"><%= ticket.subject %></h1>
+            </div>
+            <div class="text-left sm:text-left">
+                <p class="text-[10px] text-gray-500">تاريخ الاستلام</p>
+                <p class="text-xs font-mono text-gray-400 mt-0.5"><%= new Date(ticket.created_at).toLocaleString('ar-DZ') %></p>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <label class="block text-xs font-bold text-gray-500">تفاصيل ومحتوى الشكوى الواردة:</label>
+            <div class="w-full bg-[#141414] border border-[#2A2A2A] rounded-2xl p-5 text-xs text-gray-200 leading-relaxed whitespace-pre-line font-medium">
+                <%= ticket.description %>
+            </div>
+        </div>
+
+        <div class="border-t border-[#2A2A2A] pt-6 space-y-4">
+            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                <span>💬</span> اتخاذ إجراء وتحديث حالة الطلب
+            </h3>
+            
+            <form action="/admin/tickets/action/<%= ticket.id %>" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-400 mb-2">تحديث الحالة الإدارية للنزاع:</label>
+                    <select name="status" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2.5 outline-none focus:border-[#FF6B00] cursor-pointer w-full sm:w-60">
+                        <option value="pending" <%= ticket.status === 'pending' ? 'selected' : '' %>>ابقائها قيد المراجعة الفنية ⏳</option>
+                        <option value="closed" <%= ticket.status === 'closed' ? 'selected' : '' %>>إغلاق التذكرة نهائياً (تم الحل) ✅</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-4 pt-2">
+                    <button type="submit" class="bg-[#FF6B00] hover:bg-orange-600 text-black font-black text-xs py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#FF6B00]/10 transform active:scale-95">
+                        💾 حفظ وتطبيق الإجراء الحالي
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <div class="bg-[#1C1C1C] border border-[#2A2A2A] rounded-3xl p-6 shadow-2xl space-y-4">
+            <h3 class="text-xs font-bold text-white border-b border-[#2A2A2A] pb-3 flex items-center gap-2">
+                <span>👤</span> هوية وبيانات المتصل
+            </h3>
+            
+            <div class="space-y-3">
+                <div class="p-3 bg-[#141414] border border-[#2A2A2A] rounded-xl">
+                    <span class="text-[9px] text-gray-500 block mb-0.5">الاسم الكامل</span>
+                    <span class="text-xs font-bold text-white"><%= ticket.user_name %></span>
+                </div>
+
+                <div class="p-3 bg-[#141414] border border-[#2A2A2A] rounded-xl">
+                    <span class="text-[9px] text-gray-500 block mb-0.5">رتبة الحساب الأصلي</span>
+                    <span class="text-[10px] font-bold inline-block px-2 py-0.5 rounded mt-1
+                        <%= ticket.user_role === 'driver' ? 'bg-[#FF6B00]/10 text-[#FF6B00]' : 
+                            ticket.user_role === 'client' ? 'bg-blue-500/10 text-blue-400' : 'bg-gray-500/10 text-gray-400' %>">
+                        <%= ticket.user_role === 'driver' ? '🚚 كابتن معتمد' : ticket.user_role === 'client' ? '📱 زبون مسجل' : '👤 زائر مجهول' %>
+                    </span>
+                </div>
+
+                <div class="p-3 bg-[#141414] border border-[#2A2A2A] rounded-xl">
+                    <span class="text-[9px] text-gray-500 block mb-0.5">رقم الهاتف للاتصال المباشر</span>
+                    <a href="tel:<%= ticket.phone %>" class="text-xs font-mono font-bold text-green-400 hover:underline"><%= ticket.phone %></a>
+                </div>
+
+                <% if(ticket.email) { %>
+                    <div class="p-3 bg-[#141414] border border-[#2A2A2A] rounded-xl">
+                        <span class="text-[9px] text-gray-500 block mb-0.5">البريد الإلكتروني للرد الموعود</span>
+                        <a href="mailto:<%= ticket.email %>" class="text-xs font-mono font-bold text-blue-400 hover:underline break-all"><%= ticket.email %></a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>
