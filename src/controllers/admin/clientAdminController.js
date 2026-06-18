@@ -1,9 +1,10 @@
-const db = require('../../config/db');
+const db = require('../config/db');
 const axios = require('axios'); 
 
+// 1️⃣ دالة عرض صفحة إدارة الزبائن وجلب الإحصائيات الشاملة
 const getClientsPage = async (req, res) => {
     try {
-        // 1. استعلام الإحصائيات (يشمل فقط الحسابات التي دورها 'both' أو 'client')
+        // أ. استعلام الإحصائيات (يشمل فقط الحسابات التي دورها 'both' أو 'client')
         const statsQuery = `
             SELECT 
                 COUNT(*) AS total_clients,
@@ -14,7 +15,7 @@ const getClientsPage = async (req, res) => {
             WHERE default_role IN ('both', 'client');
         `;
 
-        // 2. استعلام جلب قائمة المستخدمين للجدول
+        // ب. استعلام جلب قائمة المستخدمين للجدول
         const clientsQuery = `
             SELECT 
                 id, 
@@ -58,26 +59,26 @@ const getClientsPage = async (req, res) => {
     }
 };
 
-
-// 🎯 رابط الـ Discord Webhook الجديد الخاص بك
+// 🎯 رابط الـ Discord Webhook لتتبع العمليات الرقابية
 const DISCORD_STATUS_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517156290843902012/lYR2L02gOK0KAqhdI_PaY9kYc9i4-GxHajbkWOPG37KMYgcMCHyvzJhoP5E74lyUaL5X';
 
+// 2️⃣ دالة تحديث حالة حساب الزبون (حظر / تفعيل المعلق) وإرسال التقرير لديسكورد
 const toggleClientStatus = async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; 
     
     let newStatus = 'active';
     let statusText = '🟢 Activated / Verified';
-    let embedColor = 3066993; // Decimal code for Green
+    let embedColor = 3066993; // كود اللون الأخضر الديسيمل في ديسكورد
 
     if (action === 'ban') {
         newStatus = 'banned';
         statusText = '🔴 Banned / Suspended';
-        embedColor = 15158332; // Decimal code for Red
+        embedColor = 15158332; // كود اللون الأحمر الديسيمل في ديسكورد
     }
 
     try {
-        // 1. Fetch client details before making changes to include in the log
+        // أ. فحص بيانات الزبون وسحب معلوماته الحالية قبل الكتابة والقشط في الداتا
         const clientBeforeQuery = `
             SELECT full_name, email, phone_number, current_city, wallet_balance, account_status 
             FROM users WHERE id = $1;
@@ -90,7 +91,7 @@ const toggleClientStatus = async (req, res) => {
 
         const clientData = clientCheck.rows[0];
 
-        // 2. Update user status in the database
+        // ب. تحديث حالة الحساب الحية للمستخدم مع استثناء الأدوار المزدوجة العالية إن وُجدت قسرياً
         const updateQuery = `
             UPDATE users 
             SET account_status = $1, updated_at = NOW() 
@@ -101,10 +102,11 @@ const toggleClientStatus = async (req, res) => {
 
         if (result.rowCount > 0) {
             
-            // 3. Build and send the English Embed Log to Discord
+            // ج. استدعاء بيانات الإداري الفعلي المسؤل عن الحركة حالياً من الـ Session المستقرة
             const adminName = req.session?.adminName || 'System Admin';
             const adminRole = req.session?.adminRole || 'Administrator';
 
+            // د. بناء الـ Embed الهيكلي الاحترافي بالكامل بالإنجليزية
             const discordEmbed = {
                 username: "Wajda Moderation Radar",
                 avatar_url: "https://api.getwajda.com/uploads/default-avatar.png",
@@ -159,7 +161,7 @@ const toggleClientStatus = async (req, res) => {
                 ]
             };
 
-            // Send webhook request in the background
+            // بث إشعار الديسكورد في الخلفية كطلب غير متزامن لضمان سرعة رد السيرفر
             axios.post(DISCORD_STATUS_WEBHOOK_URL, discordEmbed)
                 .catch(err => console.error('❌ Discord Status Webhook Failed:', err.message));
 
@@ -174,6 +176,7 @@ const toggleClientStatus = async (req, res) => {
     }
 };
 
+// 3️⃣ تصدير الدوال بشكل موحد لضمان قراءتها بسلام داخل ملف الـ Routes
 module.exports = {
     getClientsPage,
     toggleClientStatus
