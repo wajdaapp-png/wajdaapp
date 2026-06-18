@@ -1,12 +1,85 @@
 <%- include('partials/header', { title: 'من نحن | منصة واجدة' }) %>
 <%- include('partials/navbar') %>
-<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right">
-    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6">
-        <span class="text-4xl block mb-2">🌴</span>
-        <h1 class="text-2xl font-black text-white mb-4">من نحن؟</h1>
+
+<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right" dir="rtl">
+    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6 space-y-6">
+        
+        <!-- الهيدر الأيقوني المميز لبسكرة -->
+        <div class="flex flex-col items-start space-y-2 border-b border-kBorder pb-4">
+            <span class="text-4xl">🌴</span>
+            <h1 class="text-2xl font-black text-white">من نحن؟</h1>
+            <p class="text-xs text-kOrange font-bold tracking-wide">منصة واجدة للتوصيل والشحن اللوجستي المتكامل</p>
+        </div>
+
+        <!-- الفقرة التعريفية الرئيسية -->
         <p class="text-xs text-kMuted leading-relaxed">
-            منصة <span class="text-kOrange font-bold">واجدة</span> هي أول منظومة لوجستية رقمية متكاملة تنطلق من قلب ولاية بسكرة لتطوير قطاع الشحن والتوصيل السريع. نحن نهدف إلى سد الفجوة بين التجار والزبائن من خلال توفير شبكة كباتن محترفين يعتمدون على رادار متطور لتوزيع واستلام الطرود والطلبات حياً بأعلى معايير الأمان والسرعة اللوجستية.
+            منصة <span class="text-kOrange font-bold">واجدة</span> هي أول منظومة لوجستية رقمية متكاملة تنطلق من قلب ولاية **بسكرة** لتحدث ثورة حقيقية في قطاع الشحن، التسوق، والتوصيل السريع. نحن لسنا مجرد تطبيق توصيل تقليدي، بل نحن شبكة ذكية مبنية بالكامل لتأمين وضبط التعاملات اللوجستية والمالية بين كافة أطراف العملية: <span class="text-white font-semibold">التجار، الزبائن، والكباتن</span>.
         </p>
+
+        <hr class="border-kBorder">
+
+        <!-- رؤيتنا وأهدافنا اللوجستية والتقنية -->
+        <div class="space-y-4">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">🎯</span> رؤيتنا وما نمتاز به برمجياً:
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- الميزة الأولى -->
+                <div class="bg-[#111111]/50 border border-kBorder rounded-2xl p-4 space-y-1">
+                    <h3 class="text-xs font-bold text-white flex items-center gap-1">
+                        <span class="text-kOrange">🛰️</span> الرادار والربط الحي (GPS)
+                    </h3>
+                    <p class="text-[11px] text-kMuted leading-relaxed">
+                        نعتمد على نظام خرائط وتتبع متقدم يربط طلبات الشحن حياً بالكباتن المتواجدين في المحيط لضمان استلام وتوصيل الطرود بأقصر وقت ممكن.
+                    </p>
+                </div>
+
+                <!-- الميزة الثانية -->
+                <div class="bg-[#111111]/50 border border-kBorder rounded-2xl p-4 space-y-1">
+                    <h3 class="text-xs font-bold text-white flex items-center gap-1">
+                        <span class="text-kOrange">💳</span> الحصانة المالية والأمان
+                    </h3>
+                    <p class="text-[11px] text-kMuted leading-relaxed">
+                        نوفر نظام محفظة إلكترونية داخلي متقدم يسجل الفواتير بدقة، مع ضبط صارم لأسقف المديونية لضمان وحفظ حقوق الجميع ونزاهة التعاملات.
+                    </p>
+                </div>
+
+                <!-- الميزة الثالثة -->
+                <div class="bg-[#111111]/50 border border-kBorder rounded-2xl p-4 space-y-1">
+                    <h3 class="text-xs font-bold text-white flex items-center gap-1">
+                        <span class="text-kOrange">🔒</span> بيئة مستخدم موثوقة
+                    </h3>
+                    <p class="text-[11px] text-kMuted leading-relaxed">
+                        نطبق نظام فحص أمني صارم؛ حيث تمر الحسابات الجديدة بفترة مراجعة وتدقيق إداري دقيق قبل تفعيلها لضمان تجربة آمنة وخالية من الاحتيال.
+                    </p>
+                </div>
+
+                <!-- Mيزة الرابعة -->
+                <div class="bg-[#111111]/50 border border-kBorder rounded-2xl p-4 space-y-1">
+                    <h3 class="text-xs font-bold text-white flex items-center gap-1">
+                        <span class="text-kOrange">💬</span> دعم فني متكامل
+                    </h3>
+                    <p class="text-[11px] text-kMuted leading-relaxed">
+                        نلتزم بخدمة مستخدمينا عبر نظام تذاكر دعم فني داخلي متصل مباشرة بلوحة الإدارة المركزية لحل أي نزاعات أو استفسارات فوراً.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-kBorder">
+
+        <!-- قيمنا الثابتة -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">🤝</span> قيمنا الأساسية
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                الشفافية الكاملة، تشفير وحماية بيانات الأجهزة المتصلة بحسابك، والسرعة الفائقة في التنفيذ. نحن هنا في **واجدة** نؤمن بأن الثقة هي أساس التجارة الرقمية، ولهذا قمنا ببناء منظومة متكاملة تضمن للمستهلك والتاجر وسائق التوصيل تجربة رائدة ومحمية بنسبة 100%.
+            </p>
+        </div>
+
     </div>
 </div>
+
 <%- include('partials/footer') %>

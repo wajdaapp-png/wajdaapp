@@ -1,11 +1,83 @@
 <%- include('partials/header', { title: 'سياسة الخصوصية | منصة واجدة' }) %>
 <%- include('partials/navbar') %>
-<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right">
-    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6 space-y-4">
-        <h1 class="text-2xl font-black text-white"><span class="text-kOrange">🔒</span> سياسة الخصوصية</h1>
+
+<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right" dir="rtl">
+    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6 space-y-6">
+        
+        <div class="space-y-2 border-b border-kBorder pb-4">
+            <h1 class="text-2xl font-black text-white flex items-center gap-2">
+                <span class="text-kOrange">🔒</span> سياسة الخصوصية وحماية البيانات
+            </h1>
+            <p class="text-xs text-kMuted leading-relaxed">
+                تاريخ التحديث: <span class="text-white font-mono">18 جوان 2026</span>
+            </p>
+        </div>
+
         <p class="text-xs text-kMuted leading-relaxed">
-            نحن في منصة واجدة نلتزم بحماية بيانات مستخدمينا (تجار، زبائن، وكباتن). نقوم بجمع معلومات محدودة مثل الاسم، رقم الهاتف، والموقع الجغرافي عبر نظام الـ GPS لتسهيل عمليات ربط وتتبع الشحنات الحية. لا يتم مشاركة هذه البيانات أو بيعها لأي جهات خارجية وتخزن في خوادم مشفرة بالكامل.
+            نحن في **منصة واجدة** نلتزم التزاماً صارماً بحماية خصوصية بيانات مستخدمينا (تجار، زبائن، وكباتن). توضح هذه السياسة بشكل دقيق وشفاف كيفية جمع بياناتك، معالجتها، وحمايتها وفقاً للمعايير الأمنية المعتمدة في أنظمتنا.
         </p>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">📝</span> 1. البيانات الشخصية التي نجمعها
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                عند إنشاء حساب جديد عبر تطبيقنا، نقوم بجمع معلومات محدودة وضرورية لتشغيل الحساب وتأكيده أمنياً، وتشمل: الاسم الكامل، رقم الهاتف، البريد الإلكتروني، والعمر (حيث يشترط النظام ألا يقل عمر المستخدم عن 18 عاماً للتسجيل).
+            </p>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">📍</span> 2. تتبع الموقع الجغرافي وحساب المسافات
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                يقوم التطبيق بجمع إحداثيات موقعك الجغرافي الحية عبر نظام الـ GPS (حتى عند تشغيل التطبيق في الخلفية) وذلك لغرض أساسي وهو: تسهيل عمليات ربط وتتبع الشحنات والرحلات الحية بين الزبائن والكباتن على الخريطة، وحساب مسافات التوصيل الفعلية بدقة وضمان سلامة الطرود.
+            </p>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">📱</span> 3. سلامة الأجهزة والإشعارات الفورية
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                لحماية حسابك من الاختراق أو الاستخدام المتعدد غير المصرح به، يقوم النظام برصد ومعاينة مصفوفة الأجهزة المتصلة بحسابك الموحد (Connected Devices). كما نستخدم معرفات الأجهزة ورموز الـ FCM Token لإرسال الإشعارات الفورية الحية والرسائل الإدارية المتعلقة بحالة طلباتك وتحديثات الرحلات.
+            </p>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">⏳</span> 4. حالة الحساب والمراجعة الأمنية
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                خضوعاً لأنظمة الأمان ومكافحة الاحتيال، فإن جميع الحسابات الجديدة تسجل تلقائياً بحالة **"معلق قيد التحقق الإداري" (Pending Verification)**. تخضع البيانات لمراجعة دقيقة من قبل مسؤولي المنصة قبل التفعيل لضمان بيئة عمل آمنة ونزيهة لجميع الأطراف. تحق للمنصة تجميد أو حظر أي حساب (Banned) يثبت تجاوزه للشروط والأحكام أو تسببه في أضرار مالية.
+            </p>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">💳</span> 5. السلامة المالية والتعاملات
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                تتضمن المنصة نظام محفظة رقمية داخلي يدير الأرصدة والعمليات المالية (Wallet Balance). يتم توثيق وحفظ الفواتير والتعاملات المالية بحصانة مشفرة لضمان حقوقك، ويخضع حساب المستخدم لسقف مديونية محدد (Max Debt Limit) يُلزم النظام باستيفائه للحفاظ على استقرار وموثوقية الخدمة.
+            </p>
+        </div>
+
+        <div class="space-y-2 border-t border-kBorder pt-4">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">🛡️</span> 6. سرية البيانات والتخزين الآمن
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                نحن نؤكد التزامنا التام بـ **عدم مشاركة، بيع، أو تسريب** بياناتك الشخصية لأي جهات خارجية أو إعلانية على الإطلاق. يتم تخزين كافة البيانات الحيوية وكلمات المرور داخل قواعد بياناتنا في خوادم سحابية مشفرة بالكامل ومعزولة بأعلى مستويات الحماية البرمجية.
+            </p>
+        </div>
+
+        <div class="text-center pt-2">
+            <p class="text-[10px] text-kMuted">
+                إذا كان لديك أي استفسار أو طلب يتعلق ببياناتك الشخصية، يمكنك دائماً فتح تذكرة دعم فني من داخل التطبيق للتواصل مع فريق خدمة العملاء مباشرة.
+            </p>
+        </div>
+
     </div>
 </div>
+
 <%- include('partials/footer') %>

@@ -1,11 +1,92 @@
 <%- include('partials/header', { title: 'شروط الاستخدام | منصة واجدة' }) %>
 <%- include('partials/navbar') %>
-<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right">
-    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6 space-y-4">
-        <h1 class="text-2xl font-black text-white"><span class="text-kOrange">📜</span> شروط الاستخدام العام</h1>
+
+<div class="flex-grow container mx-auto max-w-3xl px-4 py-12 text-right" dir="rtl">
+    <div class="bg-kCard border border-kBorder rounded-3xl p-8 shadow-2xl mb-6 space-y-6">
+        
+        <!-- الهيدر الرئيسي -->
+        <div class="space-y-2 border-b border-kBorder pb-4">
+            <h1 class="text-2xl font-black text-white flex items-center gap-2">
+                <span class="text-kOrange">📜</span> شروط الاستخدام العام
+            </h1>
+            <p class="text-xs text-kMuted leading-relaxed">
+                يرجى قراءة هذه الشروط بدقة قبل استخدام المنصة. آخر تحديث: <span class="text-white font-mono">18 جوان 2026</span>
+            </p>
+        </div>
+
         <p class="text-xs text-kMuted leading-relaxed">
-            باستخدامك لمنصة واجدة، فإنك توافق على عدم إرسال أو شحن أي مواد محظورة قانونياً. يحتفظ النظام بالحق الكامل في تجميد أو حظر أي حساب (سواء كان زبوناً أو كابتن) يتلاعب بنظام الأسعار أو يقدم بيانات هوية غير مطابقة للواقع.
+            مرحباً بك في **منصة واجدة**. تشكل هذه الاتفاقية عقداً قانونياً ملزماً بينك وبين المنصة. يسري هذا العقد على جميع المستخدمين (تجار، زبائن، وكباتن). باستخدامك للموقع أو التطبيق، فإنك تقر بموافقتك الكاملة على الالتزام بالقواعد والبنود التالية:
         </p>
+
+        <!-- 1. شروط الأهلية والتسجيل -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">👤</span> 1. الأهلية القانونية وإنشاء الحساب
+            </h2>
+            <ul class="list-disc list-inside text-xs text-kMuted pr-4 space-y-1">
+                <li><strong class="text-white">شرط السن:</strong> يشترط النظام للقبول والتسجيل ألا يقل عمر المستخدم عن <span class="text-white font-mono">18 عاماً</span> لتأكيد أهليته للتعامل التجاري والقانوني.</li>
+                <li><strong class="text-white">صحة البيانات:</strong> يلتزم المستخدم بتقديم معلومات هوية مطابقة تماماً للواقع (الاسم الحقيقي، رقم الهاتف الفعال، والبريد الإلكتروني). تقديم أي بيانات وهمية يعرض الحساب للإغلاق.</li>
+            </ul>
+        </div>
+
+        <!-- 2. سياسة تفعيل الحسابات المعلقة -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">⏳</span> 2. المراجعة الإدارية والتنشيط
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                خضوعاً لأنظمة مكافحة الاحتيال والتحقق الأمني، فإن جميع الحسابات المسجلة حديثاً تدخل في حالة **"معلق قيد التحقق" (pending_verification)**. لا يحق للمستخدم استخدام خدمات التطبيق أو طلب رحلات إلا بعد مراجعة دقيقة من قِبل إدارة واجدة وتفعيل الحساب برمجياً بشكل رسمي.
+            </p>
+        </div>
+
+        <!-- 3. الأمان والأجهزة المتصلة -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">📱</span> 3. أمن الحساب والتعريف الرقمي
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                كل مستخدم مسؤول مسؤولية كاملة عن الحفاظ على سرية بيانات دخوله. يقوم النظام برصد مصفوفة الأجهزة الحية المتصلة بالحساب (Connected Devices) لمنع التداخل أو الاستخدام غير المصرح به. تحتفظ إدارة واجدة بالحق في تقييد أي حساب يُشتبه في مشاركته أو استخدامه من قِبل أطراف متعددة بشكل يضر بنظام الرادار والأمان.
+            </p>
+        </div>
+
+        <!-- 4. المواد المحظورة والشحن -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">🚫</span> 4. السلوكيات والمواد المحظورة
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                يُحظر تماماً استخدام منصة واجدة لإرسال، شحن، أو تداول أي مواد محظورة قانونياً، أو مواد خطرة، أو مسروقة، أو مخالفة للقوانين المعمول بها. كما يُحظر منعاً باتاً التلاعب بنظام الأسعار، أو محاولة قرصنة الـ APIs، أو محاولة تزييف إحداثيات الموقع الجغرافي (Fake GPS) لتضليل الكباتن أو الرادار الحي.
+            </p>
+        </div>
+
+        <!-- 5. السقف المالي والمديونية -->
+        <div class="space-y-2">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">💳</span> 5. القواعد المالية وسقف المديونية
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                تُدير المنصة الأرصدة عبر نظام محفظة إلكترونية رقمي (Wallet Balance). يُحدد النظام تلقائياً لكل مستخدم سقوف مديونية قصوى صارمة برمجياً (**Max Debt Limit**). في حال تجاوز المستخدم لهذا الحد، يحق للنظام تقييد صلاحيات حسابه تلقائياً وبشكل فوري، وتعليق قدرته على طلب رحلات جديدة حتى تتم تسوية الفواتير والمستحقات العالقة لضمان استقرار الحقوق المالية للمنصة والكباتن.
+            </p>
+        </div>
+
+        <!-- 6. العقوبات والحظر الإداري -->
+        <div class="space-y-2 border-t border-kBorder pt-4">
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span class="text-kOrange">🔨</span> 6. الحظر وتجميد الحسابات (Banned)
+            </h2>
+            <p class="text-xs text-kMuted leading-relaxed">
+                تحتفظ إدارة واجدة العليا بالحق الكامل، وبناءً على تقديرها وبث راداراتها الأمنية، في **حظر وتجميد أي حساب (Banned)** بشكل فوري ودائم، في حال ثبوت مخالفة هذه الشروط، أو فتح تذاكر دعم وهمية ومسيئة، أو التسبب في أي نزاعات تضر بسلامة مجتمع "واجدة".
+            </p>
+        </div>
+
+        <!-- التذييل الاستفساري -->
+        <div class="text-center pt-2">
+            <p class="text-[10px] text-kMuted">
+                استمرارك في استخدام خدمات منصة واجدة يعني إقرارك التام وموافقتك على كافة البنود المذكورة أعلاه. إذا كان لديك أي استفسار حول هذه الشروط، يمكنك التواصل معنا دائماً عبر تذاكر الدعم الفني في لوحة التحكم.
+            </p>
+        </div>
+
     </div>
 </div>
-<%- include('partials/footer') %>   
+
+<%- include('partials/footer') %>
