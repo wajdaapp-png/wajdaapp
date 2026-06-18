@@ -1,7 +1,21 @@
 // src/controllers/driverController.js
 
 const db = require('../config/db');
-const bcrypt = require('bcrypt'); 
+const bcrypt = require('bcrypt');
+const { sendEmailInvoice } = require('../services/emailService');
+
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || 'mail.privateemail.com',
+    port: parseInt(process.env.SMTP_PORT || '465'),
+    secure: true, 
+    auth: {
+        user: process.env.SMTP_USER, 
+        pass: process.env.SMTP_PASS  
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+}); 
 const { sendPushNotification } = require('../services/notificationService');
 
 // =========================================================================
@@ -259,7 +273,8 @@ const getDriverTrips = async (req, res) => {
 
 // =========================================================================
 // 🎯 دالة الإغلاق المالي وتحديث حالة التوصيل (مصححة ومقفلة كلياً لدورة كاش الطرود الـ COD 📦💰)
-// =========================================================================
+// src/controllers/clientController.js (تحديث دالة completeTrip)
+
 const completeTrip = async (req, res) => {
   const { order_id, order_type, driver_id, final_price } = req.body;
 
@@ -272,23 +287,23 @@ const completeTrip = async (req, res) => {
   try {
     await db.query('BEGIN');
 
-    // 🔍 جلب تفاصيل هاتف المستلم لفرز الطرود اللوجستية بدقة وعزل طلبات الشراء
+    // 🔍 تعديل الاستعلام: جلب تفاصيل هاتف المستلم، الـ user_id، والبريد الإلكتروني للزبون (email) واسمه
     const checkCODQuery = `
-      SELECT p.receiver_phone, o.user_id 
+      SELECT p.receiver_phone, o.user_id, u2.email AS client_email, u2.full_name AS client_name
       FROM core_orders o
+      JOIN users u2 ON o.user_id = u2.id
       LEFT JOIN package_order_details p ON o.id = p.order_id
       WHERE o.id = $1 LIMIT 1;
     `;
     const codCheckResult = await db.query(checkCODQuery, [order_id]);
     const orderDetail = codCheckResult.rows[0];
 
-    // 🎯 التصحيح الجوهري: معالجة النص القياسي الآمن لجافا سكريبت لمنع تحطم السيرفر
     const hasReceiver = orderDetail && 
                         orderDetail.receiver_phone && 
                         orderDetail.receiver_phone.toString().trim() !== '' && 
                         orderDetail.receiver_phone.toString().trim() !== 'لا يوجد مستلم (توصيل شخصي)';
 
-    // 🟢 إذا كان نوع الطلب طرد (package) ويملك مستقبلاً خارقاً، يدخل فوراً للمرحلة الثانية: delivered_awaiting_cash
+    // 🟢 دورة كاش الطرود (COD Phase 2)
     if (order_type === 'package' && hasReceiver) {
       const updateToCODQuery = `
         UPDATE core_orders 
@@ -320,7 +335,7 @@ const completeTrip = async (req, res) => {
       });
     }
 
-    // 🛒 [عزل طلبات التسوق والشراء بالكامل]: تغلق فوراً ومالياً بمجرد الوصول دون الدخول في طابور الارتداد المالي
+    // 🛒 إغلاق طلبات التسوق والطرود المباشرة
     const updateOrderQuery = `
       UPDATE core_orders 
       SET status = 'completed' 
@@ -346,7 +361,20 @@ const completeTrip = async (req, res) => {
       if (row.key_name === 'client_fixed_fee') baseClientFixedFee = parseFloat(row.key_value);
     });
 
-    const clientPromoResult = await db.query("SELECT COALESCE(promo, 0)::INT AS promo FROM users WHERE id = $1", [completedOrder.user_id]);
+    // 🎯 قراءة البرومو كود المطبق على الطلب بدقة لحساب التكلفة الفعلية للفاتورة
+    const orderPromoQuery = `
+      SELECT COALESCE(
+        (SELECT discount_percentage FROM promo_codes WHERE code = p.promo_code_used OR code = s.promo_code_used LIMIT 1),
+        u.promo, 
+        0
+      )::INT AS promo
+      FROM core_orders o
+      JOIN users u ON o.user_id = u.id
+      LEFT JOIN package_order_details p ON o.id = p.order_id AND o.order_type = 'package'
+      LEFT JOIN shopping_order_details s ON o.id = s.order_id AND o.order_type = 'shopping'
+      WHERE o.id = $1;
+    `;
+    const clientPromoResult = await db.query(orderPromoQuery, [order_id]);
     const clientPromo = clientPromoResult.rows[0]?.promo || 0;
 
     const finalClientFixedFee = baseClientFixedFee * (1 - (clientPromo / 100));
@@ -363,6 +391,7 @@ const completeTrip = async (req, res) => {
     
     const invoiceNo = `INV-${Date.now().toString().slice(-8)}-${order_id}`;
     const totalInvoiceAmount = parsedPrice + finalClientFixedFee;
+    
     const insertInvoiceQuery = `
       INSERT INTO invoices (
         invoice_no, order_id, client_id, driver_id, order_type, trip_price, driver_tax_percent, driver_tax_amount, client_fixed_fee, client_promo_percent, client_fee_after_promo, total_platform_earnings, driver_net_profit, total_invoice_amount
@@ -378,7 +407,7 @@ const completeTrip = async (req, res) => {
       if (parseFloat(driverData.wallet_balance) < 0 && Math.abs(parseFloat(driverData.wallet_balance)) >= parseFloat(driverData.max_debt_limit)) {
         isDriverForcedOffline = true;
         await db.query(`UPDATE users SET is_online = false WHERE id = $1;`, [driver_id]);
-        fallbackMessage = `🚨 عذراً يا كابتن! تم تجميد الرادار تلقائياً لتجاوزك سقف الدَّيْن المسموح به وهو (${parseFloat(driverData.max_debt_limit).toFixed(0)} د.ج).`;
+        fallbackMessage = `🚨 عذراً يا كابتن! تم تجميد الرادار تلقائياً لتجاوزك سقف الدَّيْن المسموح به.`;
       }
     }
 
@@ -386,6 +415,21 @@ const completeTrip = async (req, res) => {
     const userFcmToken = userQuery.rows[0]?.fcm_token;
 
     await db.query('COMMIT');
+    
+    // 📨 إطلاق محرك الفواتير البريدية المستدعى من الملف الخارجي
+    if (orderDetail && orderDetail.client_email) {
+      sendEmailInvoice(
+        orderDetail.client_email, 
+        orderDetail.client_name, 
+        invoiceNo, 
+        order_id, 
+        order_type, 
+        parsedPrice, 
+        finalClientFixedFee, 
+        totalInvoiceAmount,
+        clientPromo
+      ).catch(err => console.error("❌ Failed sending email invoice:", err));
+    }
     
     if (req.io) {
       req.io.emit(`order_status_changed_${order_id}`, { order_id: order_id, status: 'completed', message: 'وصل الكابتن وتم تسليم الأمانة بنجاح! 🎉' });
