@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../config/db'); // تأكد من صحة مسار جلب اتصال قاعدة البيانات لديك
 
-// 1️⃣ دالة تسجيل المستخدم الجديد (محدثة لتهيئة مصفوفة الأجهزة المتصلة)
+// 1️⃣ دالة تسجيل المستخدم الجديد (محدثة لتهيئة مصفوفة الأجهزة المتصلة وجعل الحالة معلقة)
 const registerUser = async (req, res) => {
   const { 
     full_name, 
@@ -35,11 +35,19 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // ج. تشفير كلمة المرور لحماية الحساب
+    // ج. التحقق من السن قانونياً (حسب شروط قاعدة البيانات الخاصة بك)
+    if (age < 18) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'عذراً، يجب أن يكون عمرك 18 عاماً أو أكثر للتسجيل.' 
+      });
+    }
+
+    // د. تشفير كلمة المرور لحماية الحساب
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // د. إدخال البيانات كاملة مع حقن المصفوفة الفارغة الافتراضية للأجهزة الحية
+    // هـ. إدخال البيانات كاملة مع حقن المصفوفة الفارغة الافتراضية للأجهزة الحية والحالة المعلقة
     const insertUserQuery = `
       INSERT INTO users (
         full_name, age, phone_number, email, password_hash, 
@@ -50,7 +58,7 @@ const registerUser = async (req, res) => {
       RETURNING id, full_name, email, phone_number, default_role, current_city, is_verified, account_status, fcm_token
     `;
 
-    // العضو الجديد يسجل كـ client وتكون حالته active، أوفلاين، ومصفوفة أجهزة فارغة '{}'
+    // العضو الجديد يسجل وتكون حالته 'pending_verification' بانتظار المراجعة
     const newUser = await db.query(insertUserQuery, [
       full_name, 
       age, 
@@ -63,22 +71,22 @@ const registerUser = async (req, res) => {
       latitude,  
       longitude,
       false, 
-      'active',
-      '{}' // 🎯 تهيئة حقل connected_devices كمصفوفة فارغة عند التسجيل
+      'pending_verification', // 🎯 تم التعديل هنا لتصبح الحالة معلقة بانتظار التحقق الإداري
+      '{}' 
     ]);
 
     const createdUser = newUser.rows[0];
 
-    // هـ. ربط المستخدم تلقائياً بجدول الأدوار المساعد
+    // و. ربط المستخدم تلقائياً بجدول الأدوار المساعد
     await db.query(
       `INSERT INTO user_roles (user_id, selected_role) VALUES ($1, $2)`,
       [createdUser.id, createdUser.default_role]
     );
 
-    // و. إرسال رد النجاح المكتمل إلى Flutter
+    // ز. إرسال رد النجاح المكتمل إلى Flutter
     res.status(201).json({
       success: true,
-      message: 'تم إنشاء حسابك الموحد كزبون بنجاح! 🎉',
+      message: 'تم تسجيل حسابك بنجاح وهو قيد المراجعة والتحقق الآن! ⏳',
       user: createdUser
     });
 
