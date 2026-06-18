@@ -1,4 +1,5 @@
 const db = require('../../config/db');
+const axios = require('axios'); 
 
 const getClientsPage = async (req, res) => {
     try {
@@ -57,30 +58,112 @@ const getClientsPage = async (req, res) => {
     }
 };
 
-// تحديث حالة حساب الزبون (حظر / تفعيل / تنشيط المعلق)
+
+// 🎯 رابط الـ Discord Webhook الجديد الخاص بك
+const DISCORD_STATUS_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517156290843902012/lYR2L02gOK0KAqhdI_PaY9kYc9i4-GxHajbkWOPG37KMYgcMCHyvzJhoP5E74lyUaL5X';
+
 const toggleClientStatus = async (req, res) => {
     const { id } = req.params;
     const { action } = req.body; 
     
     let newStatus = 'active';
+    let statusText = '🟢 Activated / Verified';
+    let embedColor = 3066993; // Decimal code for Green
+
     if (action === 'ban') {
         newStatus = 'banned';
-    } else if (action === 'activate') {
-        newStatus = 'active';
+        statusText = '🔴 Banned / Suspended';
+        embedColor = 15158332; // Decimal code for Red
     }
 
     try {
+        // 1. Fetch client details before making changes to include in the log
+        const clientBeforeQuery = `
+            SELECT full_name, email, phone_number, current_city, wallet_balance, account_status 
+            FROM users WHERE id = $1;
+        `;
+        const clientCheck = await db.query(clientBeforeQuery, [id]);
+        
+        if (clientCheck.rowCount === 0) {
+            return res.status(404).json({ success: false, message: 'User not found.' });
+        }
+
+        const clientData = clientCheck.rows[0];
+
+        // 2. Update user status in the database
         const updateQuery = `
             UPDATE users 
             SET account_status = $1, updated_at = NOW() 
             WHERE id = $2 AND (default_role != 'both' OR default_role IS NULL)
             RETURNING id;
         `;
-        
         const result = await db.query(updateQuery, [newStatus, id]);
 
         if (result.rowCount > 0) {
-            res.json({ success: true, message: `تم تحديث حالة الحساب بنجاح` });
+            
+            // 3. Build and send the English Embed Log to Discord
+            const adminName = req.session?.adminName || 'System Admin';
+            const adminRole = req.session?.adminRole || 'Administrator';
+
+            const discordEmbed = {
+                username: "Wajda Moderation Radar",
+                avatar_url: "https://api.getwajda.com/uploads/default-avatar.png",
+                embeds: [
+                    {
+                        title: "⚙️ User Account Status Updated",
+                        description: `**${adminName}** (${adminRole}) has programmatically modified a user's account status.`,
+                        color: embedColor,
+                        fields: [
+                            {
+                                name: "👤 Client Name",
+                                value: `\`${clientData.full_name}\` (ID: ${id})`,
+                                inline: true
+                            },
+                            {
+                                name: "📞 Phone Number",
+                                value: `${clientData.phone_number || 'Not Specified'}`,
+                                inline: true
+                            },
+                            {
+                                name: "📧 Email Address",
+                                value: `${clientData.email}`,
+                                inline: false
+                            },
+                            {
+                                name: "🌆 Current City",
+                                value: `${clientData.current_city || 'Not Specified'}`,
+                                inline: true
+                            },
+                            {
+                                name: "💰 Wallet Balance",
+                                value: `**${clientData.wallet_balance} DZD**`,
+                                inline: true
+                            },
+                            {
+                                name: "🔄 Previous Status",
+                                value: `\`${clientData.account_status}\``,
+                                inline: true
+                            },
+                            {
+                                name: "📊 New Action Taken",
+                                value: `**${statusText}**`,
+                                inline: false
+                            }
+                        ],
+                        footer: {
+                            text: "Live Moderation Logs - Wajda Platform",
+                            icon_url: "https://api.getwajda.com/uploads/default-avatar.png"
+                        },
+                        timestamp: new Date().toISOString()
+                    }
+                ]
+            };
+
+            // Send webhook request in the background
+            axios.post(DISCORD_STATUS_WEBHOOK_URL, discordEmbed)
+                .catch(err => console.error('❌ Discord Status Webhook Failed:', err.message));
+
+            res.json({ success: true, message: `تم تحديث حالة الحساب بنجاح وإرسال التقرير الإنجليزي` });
         } else {
             res.status(404).json({ success: false, message: 'لم يتم العثور على المستخدم المطلوب أو لا تملك الصلاحية لتعديله' });
         }
