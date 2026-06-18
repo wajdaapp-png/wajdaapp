@@ -103,9 +103,41 @@ const getAllSentNotifications = async (req, res) => {
     return res.status(500).json({ success: false, message: 'خطأ سيرفر داخلي أثناء جلب السجل.' });
   }
 };
+// =========================================================================
+// 🗑️ 4. حذف وإلغاء إشعار نهائياً من السجل والمنظومة
+// =========================================================================
+const deleteNotification = async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    const query = `DELETE FROM notifications WHERE id = $1 RETURNING id;`;
+    const result = await db.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'عذراً، الإشعار غير موجود أو تم حذفه مسبقاً.'
+      });
+    }
+
+    console.log(`🗑️ [Admin Notification Deleted]: تم مسح الإشعار رقم [#${id}] من النظام.`);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'تم مسح وإلغاء صلاحية الإشعار بنجاح من أجهزة المستخدمين 🗑️'
+    });
+
+  } catch (error) {
+    console.error('❌ Error inside deleteNotification Admin Controller:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'خطأ داخلي أثناء محاولة مسح الإشعار من قاعدة البيانات.'
+    });
+  }
+};
 module.exports = {
   getNotificationsPage,
   createNotification,
-  getAllSentNotifications
+  getAllSentNotifications,
+  deleteNotification
 };

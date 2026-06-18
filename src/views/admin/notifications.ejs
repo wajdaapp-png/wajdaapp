@@ -71,7 +71,7 @@
                             <th class="py-3 px-4 text-center">الفئة المستهدفة</th>
                             <th class="py-3 px-4 text-center">تاريخ البث</th>
                             <th class="py-3 px-4 text-center">المشاهدات الحية</th>
-                        </tr>
+                            <th class="py-3 px-4 text-center">إجراءات</th> </tr>
                     </thead>
                     <tbody>
                         <% if (notifications && notifications.length > 0) { %>
@@ -112,6 +112,12 @@
                                             <i class="fa-solid fa-eye text-[10px]"></i>
                                             <%= noti.total_views %> مشاهدة
                                         </div>
+                                    </td>
+
+                                    <td class="py-4 px-4 text-center whitespace-nowrap">
+                                        <button onclick="deleteNotification('<%= noti.id %>')" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg border border-red-500/20 transition-all cursor-pointer" title="حذف وإلغاء التنبيه نهائياً">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -174,6 +180,26 @@
             submitBtn.innerHTML = originalBtnText;
         });
     });
+    function deleteNotification(notiId) {
+    if (confirm('⚠️ هل أنت متأكد من مسح هذا الإشعار نهائياً من سجل المنصة وسحبه من هواتف المستخدمين؟')) {
+        fetch(`/admin/notifications/delete/${notiId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload(); // إنعاش فوري للسجل
+            } else {
+                alert(data.message || 'حدث خطأ أثناء محاولة حذف الإشعار.');
+            }
+        })
+        .catch(err => {
+            console.error('Error deleting notification:', err);
+            alert('خطأ في الاتصال بالخادم.');
+        });
+    }
+}
 </script>
 
 <%- include('./partials/footer') %>

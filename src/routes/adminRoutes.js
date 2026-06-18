@@ -42,6 +42,7 @@ router.post('/finance/update-taxes', adminAuthMiddleware, checkAdminPermission('
 
 router.get('/notifications', adminAuthMiddleware, checkAdminPermission('notifications'), notificationAdminController.getNotificationsPage);
 router.post('/notifications/create', adminAuthMiddleware, checkAdminPermission('notifications'), notificationAdminController.createNotification);
+router.delete('/notifications/delete/:id', adminAuthMiddleware, checkAdminPermission('notifications'), notificationAdminController.deleteNotification);
 
 router.get('/settings', adminAuthMiddleware, checkAdminPermission('settings'), settingsAdminController.getSettingsPage);
 router.post('/settings/create-admin', adminAuthMiddleware, checkAdminPermission('settings'), settingsAdminController.createAdmin);
