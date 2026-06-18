@@ -1,6 +1,6 @@
 // src/services/emailService.js
 
-const nodemailer = require('nodemailer'); // 🎯 صمام الأمان: استدعاء المكتبة المفقودة هنا
+const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'mail.privateemail.com',
@@ -19,6 +19,7 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
     const typeText = orderType === 'shopping' ? '🛒 طلب شراء وتوصيل مقاضي' : '📦 خدمة شحن ونقل طرد أمانة';
     const dateText = new Date().toLocaleDateString('ar-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+    // 🎯 تم إزالة جميع علامات الـ \ ليعود محرك السيرفر لحقن البيانات حياً
     const htmlContent = `
     <!DOCTYPE html>
     <html dir="rtl" lang="ar">
@@ -59,7 +60,7 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
                 <p>إيصال الدفع الرقمي والمالي الفوري</p>
             </div>
             <div class="content">
-                <div class="greeting">مرحباً بك يا رفيق، \${clientName} 👋</div>
+                <div class="greeting">مرحباً بك يا رفيق، ${clientName} 👋</div>
                 <p style="font-size: 13px; color: #aaaaaa; line-height: 1.6; margin-bottom: 25px;">
                     نشكرك على استخدام منصة واجدة لتلبية احتياجاتك اللوجستية. لقد اكتملت رحلتك بنجاح بفضل الكابتن، وإليك تفاصيل الفاتورة المالية الرسمية الصادرة من المنظومة:
                 </p>
@@ -67,19 +68,19 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
                 <div class="details-box">
                     <div class="details-row">
                         <span class="details-label">رقم الفاتورة:</span>
-                        <span class="details-value" style="color: #ff6b00; letter-spacing: 0.5px;">\${invoiceNo}</span>
+                        <span class="details-value" style="color: #ff6b00; letter-spacing: 0.5px;">${invoiceNo}</span>
                     </div>
                     <div class="details-row">
                         <span class="details-label">معرف الطلب بالرادار:</span>
-                        <span class="details-value">#\${orderId}</span>
+                        <span class="details-value">#${orderId}</span>
                     </div>
                     <div class="details-row">
                         <span class="details-label">تاريخ الإصدار:</span>
-                        <span class="details-value">\${dateText}</span>
+                        <span class="details-value">${dateText}</span>
                     </div>
                     <div class="details-row">
                         <span class="details-label">نوع الخدمة المفعّلة:</span>
-                        <span class="details-value">\${typeText}</span>
+                        <span class="details-value">${typeText}</span>
                     </div>
                 </div>
 
@@ -92,36 +93,36 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
                     </thead>
                     <tbody>
                         <tr>
-                            <td>\${orderType === 'shopping' ? 'الميزانية المالية للمنتجات المتفق عليها الأجر' : 'أجر خدمة الكابتن لتوصيل الأمانة'}</td>
-                            <td>\${tripPrice.toFixed(0)} د.ج</td>
+                            <td>${orderType === 'shopping' ? 'الميزانية المالية للمنتجات المتفق عليها الأجر' : 'أجر خدمة الكابتن لتوصيل الأمانة'}</td>
+                            <td>${tripPrice.toFixed(0)} د.ج</td>
                         </tr>
                         <tr>
                             <td>رسوم حماية وتأمين الخدمة الحية للمنصة</td>
-                            <td>\${(fixedFee / (1 - (promoPercent / 100)) || 50).toFixed(0)} د.ج</td>
+                            <td>${(fixedFee / (1 - (promoPercent / 100)) || 50).toFixed(0)} د.ج</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="total-section">
-                    \${promoPercent > 0 ? 
-                        \`<div class="total-row" style="color: #2ecc71;">
+                    ${promoPercent > 0 ? 
+                        `<div class="total-row" style="color: #2ecc71;">
                             <span>كابون خصم واجدة المطبّق:</span>
-                            <span class="total-value-left"><span class="promo-badge">%\${promoPercent} خصم</span></span>
-                        </div>\` 
+                            <span class="total-value-left"><span class="promo-badge">%${promoPercent} خصم</span></span>
+                        </div>` 
                     : ''}
                     <div class="total-row">
                         <span class="details-label">صافي رسوم الخدمة بعد التخفيض:</span>
-                        <span class="total-value-left" style="color: #ffffff; font-weight: bold;">\${fixedFee.toFixed(0)} د.ج</span>
+                        <span class="total-value-left" style="color: #ffffff; font-weight: bold;">${fixedFee.toFixed(0)} د.ج</span>
                     </div>
                     <div class="total-row final">
                         <span>المبلغ الإجمالي المدفوع كاش:</span>
-                        <span class="total-value-left">\${totalAmount.toFixed(0)} د.ج</span>
+                        <span class="total-value-left">${totalAmount.toFixed(0)} د.ج</span>
                     </div>
                 </div>
             </div>
             <div class="footer">
                 <p>هذه فاتورة آلية صادرة من خادم نظام تطبيق واجدة ولا تحتاج إلى توقيع يدوّي.</p>
-                <p>إذا كان لديك أي استفسار، يرجى التواصل مع الدعم الفني عبر التطبيق أو زيارة موقعنا <a href="https://wajda.app">wajda.app</a></p>
+                <p>إذا كان لديك أي استفسار، يرجى التواصل مع الدعم الفني عبر التطبيق أو زيارة موقعنا <a href="https://getwajda.com/contact">wajda.app</a></p>
                 <p style="margin-top: 15px; color: #333;">© 2026 تطبيق واجدة اللوجستي. جميع الحقوق محفوظة.</p>
             </div>
         </div>
