@@ -30,8 +30,8 @@ router.post('/login', driverController.processDriverLogin);
 // =========================================================================
 // 📝 3️⃣ مسار ترقية الحساب والتسجيل ككابتن (في حال كان المستخدم client)
 // =========================================================================
-router.get('/register', driverController.renderDriverRegister);
-router.post('/register', uploadDriverDocs, driverController.processDriverRegister);
+router.get('/register',isDriverAuthenticated, driverController.renderDriverRegister);
+router.post('/register',isDriverAuthenticated, uploadDriverDocs, driverController.processDriverRegister);
 
 // =========================================================================
 // 🚪 4️⃣ مسار تسجيل الخروج وتطهير الجلسة تماماً
