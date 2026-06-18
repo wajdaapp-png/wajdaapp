@@ -22,11 +22,11 @@
                 <div>
                     <label for="vehicle_type" class="block text-xs font-bold text-kMuted mb-2 mr-1">نوع مركبة التوصيل</label>
                     <select id="vehicle_type" name="vehicle_type" required 
-                        class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange focus:ring-1 focus:ring-kOrange cursor-pointer">
-                        <option value="bike" class="bg-kCard">دراجة هوائية 🚲</option>
-                        <option value="motorcycle" class="bg-kCard">دراجة نارية 🏍️</option>
-                        <option value="car" class="bg-kCard">سيارة سياحية 🚗</option>
-                        <option value="van" class="bg-kCard">سيارة نفعية / شاحنة 🚚</option>
+                        class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange cursor-pointer">
+                        <option value="bike" class="bg-kCard" <%= (typeof existingApp !== 'undefined' && existingApp && existingApp.vehicle_type === 'bike') ? 'selected' : '' %>>دراجة هوائية 🚲</option>
+                        <option value="motorcycle" class="bg-kCard" <%= (typeof existingApp !== 'undefined' && existingApp && existingApp.vehicle_type === 'motorcycle') ? 'selected' : '' %>>دراجة نارية 🏍️</option>
+                        <option value="car" class="bg-kCard" <%= (typeof existingApp !== 'undefined' && existingApp && existingApp.vehicle_type === 'car') ? 'selected' : '' %>>سيارة سياحية 🚗</option>
+                        <option value="van" class="bg-kCard" <%= (typeof existingApp !== 'undefined' && existingApp && existingApp.vehicle_type === 'van') ? 'selected' : '' %>>سيارة نفعية / شاحنة 🚚</option>
                     </select>
                 </div>
 
@@ -54,14 +54,16 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div id="plate_number_wrapper">
                         <label for="vehicle_plate" class="block text-xs font-bold text-kMuted mb-2 mr-1">رقم لوحة الترقيم (الترقيم)</label>
-                        <input type="text" id="vehicle_plate" name="vehicle_plate" placeholder="12345 116 07" 
-                            class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange focus:ring-1 focus:ring-kOrange">
+                        <input type="text" id="vehicle_plate" name="vehicle_plate" 
+                            value="<%= (typeof existingApp !== 'undefined' && existingApp) ? existingApp.vehicle_plate : '' %>" 
+                            placeholder="12345 116 07" class="...">
                     </div>
 
                     <div>
                         <label for="license_number" class="block text-xs font-bold text-kMuted mb-2 mr-1">رقم رخصة السياقة</label>
-                        <input type="text" id="license_number" name="license_number" placeholder="رقم الرخصة المكتوب بالخلف" 
-                            class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange focus:ring-1 focus:ring-kOrange">
+                        <input type="text" id="license_number" name="license_number" 
+                            value="<%= (typeof existingApp !== 'undefined' && existingApp) ? existingApp.license_number : '' %>" 
+                            placeholder="رقم الرخصة المكتوب بالخلف" class="...">
                     </div>
                 </div>
 
@@ -101,8 +103,20 @@
                     إلغاء وتراجع 🔙
                 </a>
                 <button type="submit" 
-                    class="w-full sm:flex-grow bg-kOrange hover:bg-orange-600 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg shadow-kOrange/20 transition-all duration-200 transform active:scale-[0.98]">
-                    تقديم ملف الترقية فوراً 🚀
+                    <% if (typeof existingApp !== 'undefined' && existingApp && (existingApp.status === 'pending' || existingApp.status === 'approved')) { %>
+                        disabled
+                        class="w-full sm:flex-grow bg-gray-600 text-gray-400 font-bold text-sm py-3 px-4 rounded-xl cursor-not-allowed opacity-60 shadow-none"
+                    <% } else { %>
+                        class="w-full sm:flex-grow bg-kOrange hover:bg-orange-600 text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg shadow-kOrange/20 transition-all duration-200 transform active:scale-[0.98]"
+                    <% } %>
+                >
+                    <% if (typeof existingApp !== 'undefined' && existingApp && existingApp.status === 'approved') { %>
+                        حسابك مرقى ومقبول ككابتن بالفعل ✅
+                    <% } else if (typeof existingApp !== 'undefined' && existingApp && existingApp.status === 'pending') { %>
+                        طلبك قيد المراجعة اللوجستية حالياً ⏳
+                    <% } else { %>
+                        تقديم ملف الترقية فوراً 🚀
+                    <% } %>
                 </button>
             </div>
         </form>

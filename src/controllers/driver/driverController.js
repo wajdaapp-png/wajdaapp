@@ -151,14 +151,35 @@ const processDriverLogin = async (req, res) => {
 };
 
 // =========================================================================
-// 📝 4️⃣ واجهة عرض صفحة ترقية الحساب (Register View)
+// 📝 4️⃣ واجهة عرض صفحة ترقية الحساب (محدثة لجلب البيانات القديمة)
 // =========================================================================
 const renderDriverRegister = async (req, res) => {
+  const driverId = req.session.driverId;
+
+  if (!driverId) {
+    return res.redirect('/driver/login');
+  }
+
   try {
-    return res.render('driver/register', { title: "انضم لكباتن واجدة | ترقية الحساب" });
+    // 🔍 البحث عن طلب ترقية سابق لهذا المستخدم في الجدول الجديد
+    const checkAppQuery = `
+      SELECT vehicle_type, working_city, vehicle_plate, license_number, license_image, vehicle_image, status
+      FROM driver_applications 
+      WHERE user_id = $1 LIMIT 1;
+    `;
+    const appResult = await db.query(checkAppQuery, [driverId]);
+    const existingApp = appResult.rows[0] || null; // ستكون null إذا كان مستخدم جديد تماماً
+
+    // تمرير المتغير existingApp إلى واجهة الـ EJS
+    return res.render('driver/register', { 
+      title: "انضم لكباتن واجدة | ترقية الحساب",
+      error: null,
+      existingApp: existingApp // 🎯 هنا تكمن قوة جلب البيانات
+    });
+
   } catch (error) {
-    console.error('❌ Error inside renderDriverRegister:', error);
-    return res.status(500).send('حدث خطأ أثناء تحميل صفحة التسجيل.');
+    console.error('❌ Error inside renderDriverRegister (Get Existing Application):', error);
+    return res.status(500).send('حدث خطأ أثناء فحص وتجهيز مستندات الترقية.');
   }
 };
 
@@ -277,6 +298,7 @@ const processDriverRegister = async (req, res) => {
     });
   }
 };
+
 module.exports = { 
   renderDriverHome,
   renderDriverLogin,
