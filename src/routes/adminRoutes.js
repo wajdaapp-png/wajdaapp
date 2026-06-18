@@ -48,6 +48,6 @@ router.post('/settings/create-admin', adminAuthMiddleware, checkAdminPermission(
 router.post('/settings/update-admin', adminAuthMiddleware, checkAdminPermission('settings'), settingsAdminController.updateAdminPermissions);
 
 router.get('/tickets', adminAuthMiddleware, checkAdminPermission('tickets'), ticketAdminController.renderTicketsDashboard);
-router.get('/tickets/view/:id', isAdminAuthenticated, adminController.viewTicketDetails);
+router.get('/tickets/view/:id',adminAuthMiddleware, checkAdminPermission('tickets'), ticketAdminController.viewTicketDetails);
 
 module.exports = router;
