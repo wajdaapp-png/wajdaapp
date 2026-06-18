@@ -184,7 +184,7 @@ const renderDriverTerms = async (req, res) => {
   }
 };
 // =========================================================================
-// 🚀 6️⃣ دالة معالجة ترقية الحساب وحفظ وثائق الكابتن (Form Processing)
+// 🚀 6️⃣ دالة معالجة ترقية الحساب وحفظ وثائق الكابتن في جدول مستقل
 // =========================================================================
 const processDriverRegister = async (req, res) => {
   const driverId = req.session.driverId;
@@ -196,7 +196,7 @@ const processDriverRegister = async (req, res) => {
   const { vehicle_type, working_city, vehicle_plate, license_number } = req.body;
 
   try {
-    // جلب مسارات الصور التي قام Multer برفعها بنجاح إن وُجدت
+    // جلب مسارات الصور التي قام Multer برفعها بنجاح في مجلد drivers_docs
     const licenseImageFile = req.files && req.files['license_image'] ? req.files['license_image'][0].filename : null;
     const vehicleImageFile = req.files && req.files['vehicle_image'] ? req.files['vehicle_image'][0].filename : null;
 
@@ -216,53 +216,64 @@ const processDriverRegister = async (req, res) => {
       }
     }
 
-    // 🎯 تحديث بيانات المستخدم في قاعدة البيانات وترقية رتبته
-    // سيتم تخزين اسم الملف فقط في قاعدة البيانات ليتوافق مع آلية الـ Static files المنضبطة لدينا
-    const updateQuery = `
-      UPDATE users 
-      SET 
-        default_role = 'both', 
-        account_status = 'approved', -- تفعيل مباشر أو تركه 'pending' حسب رغبتك في الإدارة
-        vehicle_type = $1, 
-        working_city = $2, 
-        vehicle_plate = $3, 
-        license_number = $4,
-        license_image = $5,
-        vehicle_image = $6,
-        updated_at = NOW()
-      WHERE id = $7
-      RETURNING full_name;
+    // 1️⃣ حقن أو تحديث وثائق الكابتن داخل الجدول المنفصل (driver_applications)
+    // استخدام ON CONFLICT يضمن تحديث الملف إذا كان الكابتن قد قدم طلباً سابقاً ورُفض أو أراد تعديله
+    const applicationQuery = `
+      INSERT INTO driver_applications (
+        user_id, vehicle_type, working_city, vehicle_plate, license_number, license_image, vehicle_image, status, updated_at
+      ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, 'approved', NOW())
+      ON CONFLICT (user_id) 
+      DO UPDATE SET 
+        vehicle_type = EXCLUDED.vehicle_type,
+        working_city = EXCLUDED.working_city,
+        vehicle_plate = EXCLUDED.vehicle_plate,
+        license_number = EXCLUDED.license_number,
+        license_image = COALESCE(EXCLUDED.license_image, driver_applications.license_image),
+        vehicle_image = COALESCE(EXCLUDED.vehicle_image, driver_applications.vehicle_image),
+        status = 'approved',
+        updated_at = NOW();
     `;
 
-    const values = [
+    const appValues = [
+      driverId,
       vehicle_type,
       working_city,
       vehicle_plate ? vehicle_plate.trim() : null,
       license_number ? license_number.trim() : null,
       licenseImageFile,
-      vehicleImageFile,
-      driverId
+      vehicleImageFile
     ];
 
-    await db.query(updateQuery, values);
+    await db.query(applicationQuery, appValues);
 
-    // تحديث الجلسة المباشرة الحية في السيرفر ليعبر صمامات الأمان بصفته سائق معتمد
+    // 2️⃣ ترقية رتبة الحساب في جدول المستخدمين الرئيسي (users) ليصبح سائقاً معتمداً
+    const updateUserQuery = `
+      UPDATE users 
+      SET 
+        default_role = 'both',
+        updated_at = NOW()
+      WHERE id = $1;
+    `;
+    await db.query(updateUserQuery, [driverId]);
+
+    // 3️⃣ تثبيت الصلاحيات الجديدة في الجلسة المباشرة الحية للسيرفر
     req.session.driverRole = 'both';
     
     req.session.save((err) => {
       if (err) {
-        console.error('❌ فشل حفظ الجلسة بعد الترقية:', err);
+        console.error('❌ فشل حفظ الجلسة بعد الترقية المنفصلة:', err);
         return res.status(500).send('حدث خطأ أثناء تحديث صلاحيات الجلسة.');
       }
-      console.log(`🎉 [Driver Upgraded Successfully]: الحساب رقم (${driverId}) تمت ترقيته بنجاح إلى كابتن بنطاق [${working_city}].`);
+      console.log(`🎉 [Driver Application Saved]: الوثائق حُفظت في الجدول الجديد وتمت ترقية الحساب رقم (${driverId}) بنجاح.`);
       return res.redirect('/driver/');
     });
 
   } catch (error) {
-    console.error('❌ Error inside processDriverRegister:', error);
+    console.error('❌ Error inside processDriverRegister (Multi-Table):', error);
     return res.render('driver/register', { 
       title: "انضم لكباتن واجدة | ترقية الحساب", 
-      error: "حدث خطأ داخلي في السيرفر أثناء معالجة المستندات، يرجى إعادة المحاولة." 
+      error: "حدث خطأ داخلي أثناء معالجة وحفظ المستندات في جدول الطلبات، يرجى إعادة المحاولة." 
     });
   }
 };
