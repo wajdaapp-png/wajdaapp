@@ -16,6 +16,7 @@ router.get('/devices/:user_id', clientController.getConnectedDevices);
 router.post('/devices/disconnect', clientController.disconnectDevice);
 router.delete('/delete-account', clientController.deleteAccount);
 
+router.get('/system-settings', clientController.getSystemSettings );
 // =========================================================================
 // 🔔 مركز التنبيهات والإشعارات الفورية الخاص بالزبائن (تم التطهير والتعديل)
 // =========================================================================
