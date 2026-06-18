@@ -84,59 +84,58 @@ const registerUser = async (req, res) => {
       [createdUser.id, createdUser.default_role]
     );
 
-    // 🎯 ز. إرسال الـ Embed التفصيلي الفوري إلى ديسكورد لإشعار الإدارة
     const discordEmbed = {
-        username: "رادار تسجيل واجدة",
+        username: "Wajda Registration Radar",
         avatar_url: "https://api.getwajda.com/uploads/default-avatar.png",
         embeds: [
             {
-                title: "🆕 عضو جديد مسجل (ينتظر التفعيل) ⏳",
-                description: `قام مستخدم جديد بإنشاء حساب عبر التطبيق، وحسابه الآن **معلق بانتظار المراجعة الإدارية**.`,
-                color: 16752384, // اللون البرتقالي المائل للأصفر (Amber/Orange)
+                title: "🆕 New User Registered (Pending Activation) ⏳",
+                description: "A new user has created an account via the app. The account status is currently set to **Pending Verification** and requires administrator approval.",
+                color: 16752384, // Amber/Orange color
                 fields: [
                     {
-                        name: "👤 الاسم الكامل",
+                        name: "👤 Full Name",
                         value: `\`${createdUser.full_name}\``,
                         inline: true
                     },
                     {
-                        name: "🆔 معرف الحساب (ID)",
+                        name: "🆔 User ID",
                         value: `\`${createdUser.id}\``,
                         inline: true
                     },
                     {
-                        name: "📞 رقم الهاتف",
-                        value: `${createdUser.phone_number || 'غير محدد'}`,
+                        name: "📞 Phone Number",
+                        value: `${createdUser.phone_number || 'Not Specified'}`,
                         inline: true
                     },
                     {
-                        name: "📧 البريد الإلكتروني",
+                        name: "📧 Email Address",
                         value: `${createdUser.email}`,
                         inline: false
                     },
                     {
-                        name: "🎂 العمر",
-                        value: `${age} سنة`,
+                        name: "🎂 Age",
+                        value: `${age} years old`,
                         inline: true
                     },
                     {
-                        name: "🌆 المدينة",
+                        name: "🌆 Current City",
                         value: `${createdUser.current_city}`,
                         inline: true
                     },
                     {
-                        name: "🎭 الدور الافتراضي",
+                        name: "🎭 Default Role",
                         value: `\`${createdUser.default_role}\``,
                         inline: true
                     },
                     {
-                        name: "📊 حالة الحساب الحالية",
-                        value: "⏳ `pending_verification` (بحاجة لتفعيل من لوحة الـ Admin)",
+                        name: "📊 Current Account Status",
+                        value: "⏳ `pending_verification` (Awaiting Admin Activation)",
                         inline: false
                     }
                 ],
                 footer: {
-                    text: "نظام التسجيل التلقائي - منصة واجدة",
+                    text: "Automated Registration System - Wajda Platform",
                     icon_url: "https://api.getwajda.com/uploads/default-avatar.png"
                 },
                 timestamp: new Date().toISOString()
