@@ -1,8 +1,7 @@
 // src/services/emailService.js
 
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer'); // 🎯 صمام الأمان: استدعاء المكتبة المفقودة هنا
 
-// إعداد الـ Transporter (تأكد من قراءته للمتغيرات من ملف الـ .env)
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'mail.privateemail.com',
     port: parseInt(process.env.SMTP_PORT || '465'),
@@ -16,7 +15,6 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// دالة إرسال الفاتورة البريدية للزبون بتنسيق فاخر ومناسب لجميع الشاشات
 const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderType, tripPrice, fixedFee, totalAmount, promoPercent) => {
     const typeText = orderType === 'shopping' ? '🛒 طلب شراء وتوصيل مقاضي' : '📦 خدمة شحن ونقل طرد أمانة';
     const dateText = new Date().toLocaleDateString('ar-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -105,13 +103,12 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
                 </table>
 
                 <div class="total-section">
-                    // استبدل الأسطر التي بها خطأ بهذا التنسيق النظيف:
-                ${promoPercent > 0 ? 
-                    `<div class="total-row" style="color: #2ecc71;">
-                        <span>كابون خصم واجدة المطبّق:</span>
-                        <span class="total-value-left"><span class="promo-badge">%${promoPercent} خصم</span></span>
-                    </div>` 
-                : ''}
+                    \${promoPercent > 0 ? 
+                        \`<div class="total-row" style="color: #2ecc71;">
+                            <span>كابون خصم واجدة المطبّق:</span>
+                            <span class="total-value-left"><span class="promo-badge">%\${promoPercent} خصم</span></span>
+                        </div>\` 
+                    : ''}
                     <div class="total-row">
                         <span class="details-label">صافي رسوم الخدمة بعد التخفيض:</span>
                         <span class="total-value-left" style="color: #ffffff; font-weight: bold;">\${fixedFee.toFixed(0)} د.ج</span>
@@ -142,5 +139,4 @@ const sendEmailInvoice = async (toEmail, clientName, invoiceNo, orderId, orderTy
     return transporter.sendMail(mailOptions);
 };
 
-// 🎯 تصدير الدالة لتصبح متاحة للاستدعاء الخارجي
 module.exports = { sendEmailInvoice };
