@@ -103,7 +103,7 @@ const toggleClientStatus = async (req, res) => {
         // أ. فحص بيانات الزبون الحالية
         console.log(`📡 [DB Fetch]: Checking existing client data for ID: ${id}...`);
         const clientBeforeQuery = `
-            SELECT full_name, email, phone_number, current_city, wallet_balance, account_status 
+            SELECT full_name, email, phone_number, current_city, wallet_balance, account_status, avatar_url 
             FROM users WHERE id = $1;
         `;
         const clientCheck = await db.query(clientBeforeQuery, [id]);
@@ -199,7 +199,7 @@ const toggleClientStatus = async (req, res) => {
             console.log(`🛰️ [Discord Dispatch]: Assembling embed log packet for Discord Webhook...`);
             const discordEmbed = {
                 username: "Wajda Moderation Radar",
-                avatar_url: "https://api.getwajda.com/uploads/default-avatar.png",
+                avatar_url: `https://getwajda.com/uploads/${clientData.avatar_url}`,
                 embeds: [
                     {
                         title: "⚙️ User Account Status Updated",
@@ -216,7 +216,7 @@ const toggleClientStatus = async (req, res) => {
                         ],
                         footer: {
                             text: "Live Moderation Logs - Wajda Platform",
-                            icon_url: "https://api.getwajda.com/uploads/default-avatar.png"
+                            icon_url: `https://getwajda.com/uploads/${clientData.avatar_url}`
                         },
                         timestamp: new Date().toISOString()
                     }
