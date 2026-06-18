@@ -1,7 +1,9 @@
+const db = require('../../config/db');
 const bcrypt = require('bcrypt');
-const db = require('../config/db'); // تأكد من صحة مسار جلب اتصال قاعدة البيانات لديك
+const axios = require('axios'); 
 
-// 1️⃣ دالة تسجيل المستخدم الجديد (محدثة لتهيئة مصفوفة الأجهزة المتصلة وجعل الحالة معلقة)
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1517152619984982016/Ehj5Es0fjc3o4iujUjmclzCX6UberfUW20Z4GfuIXizXMJwDFm6SAwK3xQQLjc8FAsXJ';
+
 const registerUser = async (req, res) => {
   const { 
     full_name, 
@@ -35,7 +37,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // ج. التحقق من السن قانونياً (حسب شروط قاعدة البيانات الخاصة بك)
+    // ج. التحقق من السن قانونياً
     if (age < 18) {
       return res.status(400).json({ 
         success: false, 
@@ -47,7 +49,7 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // هـ. إدخال البيانات كاملة مع حقن المصفوفة الفارغة الافتراضية للأجهزة الحية والحالة المعلقة
+    // هـ. إدخال البيانات كاملة مع حقن مصفوفة الأجهزة والحالة المعلقة
     const insertUserQuery = `
       INSERT INTO users (
         full_name, age, phone_number, email, password_hash, 
@@ -58,7 +60,6 @@ const registerUser = async (req, res) => {
       RETURNING id, full_name, email, phone_number, default_role, current_city, is_verified, account_status, fcm_token
     `;
 
-    // العضو الجديد يسجل وتكون حالته 'pending_verification' بانتظار المراجعة
     const newUser = await db.query(insertUserQuery, [
       full_name, 
       age, 
@@ -71,7 +72,7 @@ const registerUser = async (req, res) => {
       latitude,  
       longitude,
       false, 
-      'pending_verification', // 🎯 تم التعديل هنا لتصبح الحالة معلقة بانتظار التحقق الإداري
+      'pending_verification', // 🎯 الحالة معلقة تلقائياً
       '{}' 
     ]);
 
@@ -83,7 +84,71 @@ const registerUser = async (req, res) => {
       [createdUser.id, createdUser.default_role]
     );
 
-    // ز. إرسال رد النجاح المكتمل إلى Flutter
+    // 🎯 ز. إرسال الـ Embed التفصيلي الفوري إلى ديسكورد لإشعار الإدارة
+    const discordEmbed = {
+        username: "رادار تسجيل واجدة",
+        avatar_url: "https://api.getwajda.com/uploads/default-avatar.png",
+        embeds: [
+            {
+                title: "🆕 عضو جديد مسجل (ينتظر التفعيل) ⏳",
+                description: `قام مستخدم جديد بإنشاء حساب عبر التطبيق، وحسابه الآن **معلق بانتظار المراجعة الإدارية**.`,
+                color: 16752384, // اللون البرتقالي المائل للأصفر (Amber/Orange)
+                fields: [
+                    {
+                        name: "👤 الاسم الكامل",
+                        value: `\`${createdUser.full_name}\``,
+                        inline: true
+                    },
+                    {
+                        name: "🆔 معرف الحساب (ID)",
+                        value: `\`${createdUser.id}\``,
+                        inline: true
+                    },
+                    {
+                        name: "📞 رقم الهاتف",
+                        value: `${createdUser.phone_number || 'غير محدد'}`,
+                        inline: true
+                    },
+                    {
+                        name: "📧 البريد الإلكتروني",
+                        value: `${createdUser.email}`,
+                        inline: false
+                    },
+                    {
+                        name: "🎂 العمر",
+                        value: `${age} سنة`,
+                        inline: true
+                    },
+                    {
+                        name: "🌆 المدينة",
+                        value: `${createdUser.current_city}`,
+                        inline: true
+                    },
+                    {
+                        name: "🎭 الدور الافتراضي",
+                        value: `\`${createdUser.default_role}\``,
+                        inline: true
+                    },
+                    {
+                        name: "📊 حالة الحساب الحالية",
+                        value: "⏳ `pending_verification` (بحاجة لتفعيل من لوحة الـ Admin)",
+                        inline: false
+                    }
+                ],
+                footer: {
+                    text: "نظام التسجيل التلقائي - منصة واجدة",
+                    icon_url: "https://api.getwajda.com/uploads/default-avatar.png"
+                },
+                timestamp: new Date().toISOString()
+            }
+        ]
+    };
+
+    // بث الإشعار إلى ديسكورد في الخلفية
+    axios.post(DISCORD_WEBHOOK_URL, discordEmbed)
+        .catch(err => console.error('❌ فشل إرسال إشعار التسجيل لديسكورد:', err.message));
+
+    // حـ. إرسال رد النجاح المكتمل إلى Flutter
     res.status(201).json({
       success: true,
       message: 'تم تسجيل حسابك بنجاح وهو قيد المراجعة والتحقق الآن! ⏳',
@@ -191,61 +256,5 @@ const loginUser = async (req, res) => {
 
 module.exports = {
   registerUser,
-  loginUser
-};
-
-// // 3. دالة تحديث وتبديل دور الحساب (محدثة لتدعم نظام فحص الـ account_status ثلاثي الأبعاد)
-// const updateUserRole = async (req, res) => {
-//   const { user_id, selected_role } = req.body;
-
-//   try {
-//     // أ. جلب حالة الحساب أولاً للتأكد من أمان الانتقال
-//     const userCheck = await db.query('SELECT account_status, default_role FROM users WHERE id = $1', [user_id]);
-    
-//     if (userCheck.rows.length === 0) {
-//       return res.status(404).json({ success: false, message: 'المستخدم غير موجود!' });
-//     }
-
-//     const user = userCheck.rows[0];
-
-//     // ب. إذا كان المستخدم يطلب التحول إلى وضع السائق (سواء كتبها التطبيق driver أو both)
-//     // نقوم بإرجاع حالة حسابه الحالية الموثقة في السيرفر ليتعامل معها Flutter
-//     if (selected_role === 'driver' || selected_role === 'both') {
-//       return res.status(200).json({
-//         success: true,
-//         message: 'تم فحص صلاحيات السائق بالسيرفر بنجاح.',
-//         account_status: user.account_status, // 👈 سيرسل active أو pending_verification أو banned
-//         role: user.default_role
-//       });
-//     }
-
-//     // ج. في حالة العودة العادية لوضع الزبون النقي (client)
-//     const userUpdateResult = await db.query(
-//       'UPDATE users SET default_role = $1 WHERE id = $2 RETURNING full_name, account_status',
-//       [selected_role, user_id]
-//     );
-    
-//     await db.query(
-//       'UPDATE user_roles SET selected_role = $1 WHERE user_id = $2',
-//       [selected_role, user_id]
-//     );
-
-//     res.status(200).json({
-//       success: true,
-//       message: `تم التبديل بنجاح! 🚀`,
-//       account_status: userUpdateResult.rows[0].account_status,
-//       user_name: userUpdateResult.rows[0].full_name
-//     });
-
-//   } catch (error) {
-//     console.error('Update Role Error:', error);
-//     res.status(500).json({ success: false, message: 'حدث خطأ داخلي بالسيرفر أثناء تحديث الدور' });
-//   }
-// };
-
-module.exports = {
-  registerUser,
   loginUser,
-  
-  
 };
