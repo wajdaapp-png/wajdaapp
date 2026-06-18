@@ -56,14 +56,16 @@
                         <label for="vehicle_plate" class="block text-xs font-bold text-kMuted mb-2 mr-1">رقم لوحة الترقيم (الترقيم)</label>
                         <input type="text" id="vehicle_plate" name="vehicle_plate" 
                             value="<%= (typeof existingApp !== 'undefined' && existingApp) ? existingApp.vehicle_plate : '' %>" 
-                            placeholder="12345 116 07" class="...">
+                            placeholder="12345 116 07" 
+                            class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange focus:ring-1 focus:ring-kOrange">
                     </div>
 
                     <div>
                         <label for="license_number" class="block text-xs font-bold text-kMuted mb-2 mr-1">رقم رخصة السياقة</label>
                         <input type="text" id="license_number" name="license_number" 
                             value="<%= (typeof existingApp !== 'undefined' && existingApp) ? existingApp.license_number : '' %>" 
-                            placeholder="رقم الرخصة المكتوب بالخلف" class="...">
+                            placeholder="رقم الرخصة المكتوب بالخلف" 
+                            class="w-full bg-kBg border border-kBorder text-white rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:border-kOrange focus:ring-1 focus:ring-kOrange">
                     </div>
                 </div>
 
@@ -82,6 +84,7 @@
                 </div>
 
             </div>
+            
             <div class="p-4 bg-kBg border border-kBorder rounded-2xl flex items-start gap-3">
                 <span class="text-xl mt-0.5">💡</span>
                 <div class="space-y-1">
@@ -130,7 +133,6 @@
         const legalDocsSection = document.getElementById('legal_docs_section');
         const vehicleImageLabel = document.getElementById('vehicle_image_label');
         
-        // الحقول المطلوب تفعيل خاصية الـ required عليها ديناميكياً عند الحاجة
         const vehiclePlate = document.getElementById('vehicle_plate');
         const licenseNumber = document.getElementById('license_number');
         const licenseImage = document.getElementById('license_image');
@@ -140,28 +142,22 @@
             const selectedVehicle = vehicleSelect.value;
 
             if (selectedVehicle === 'bike') {
-                // 1. الدراجة الهوائية: إخفاء حزمة الوثائق تماماً وإلغاء القيود
                 legalDocsSection.classList.add('hidden');
-                
                 vehiclePlate.required = false;
                 licenseNumber.required = false;
                 licenseImage.required = false;
                 vehicleImage.required = false;
             } else {
-                // 2. بقية المركبات: إظهار قسم الوثائق فوراً وفرض شروط الإدخال
                 legalDocsSection.classList.remove('hidden');
-                
                 licenseNumber.required = true;
                 licenseImage.required = true;
                 
                 if (selectedVehicle === 'motorcycle') {
-                    // الدراجة النارية: تعديل النص التوضيحي وجعل الترقيم اختيارياً حسب نوعها
                     vehicleImageLabel.innerHTML = 'وثيقة الدراجة النارية / كرت الضمان (إن وجد)';
                     vehiclePlate.placeholder = "رقم الترقيم (اتركه فارغاً إن لم يتوفر)";
                     vehiclePlate.required = false;
                     vehicleImage.required = false;
                 } else {
-                    // السيارات والشاحنات: فرض الترقيم والبطاقة الرمادية قسراً
                     vehicleImageLabel.innerHTML = 'صورة البطاقة الرمادية للمركبة (Carte Grise) 📄';
                     vehiclePlate.placeholder = "12345 116 07";
                     vehiclePlate.required = true;
@@ -170,9 +166,7 @@
             }
         }
 
-        // الاستماع لحدث التغيير فوراً عند ضغط الكابتن
         vehicleSelect.addEventListener('change', toggleVehicleFields);
-        // تشغيل الفحص لمرة واحدة عند تحميل الصفحة لمعالجة الكاش الافتراضي
         toggleVehicleFields();
     });
 </script>
