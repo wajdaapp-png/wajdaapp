@@ -205,7 +205,7 @@ const renderDriverTerms = async (req, res) => {
   }
 };
 // =========================================================================
-// 🚀 6️⃣ دالة معالجة ترقية الحساب وحفظ وثائق الكابتن في جدول مستقل
+// 🚀 6️⃣ دالة معالجة إرسال طلب ترقية الكابتن للمراجعة (بدون ترقية تلقائية)
 // =========================================================================
 const processDriverRegister = async (req, res) => {
   const driverId = req.session.driverId;
@@ -237,13 +237,13 @@ const processDriverRegister = async (req, res) => {
       }
     }
 
-    // 1️⃣ حقن أو تحديث وثائق الكابتن داخل الجدول المنفصل (driver_applications)
-    // استخدام ON CONFLICT يضمن تحديث الملف إذا كان الكابتن قد قدم طلباً سابقاً ورُفض أو أراد تعديله
+    // 1️⃣ حقن أو تحديث وثائق الكابتن داخل الجدول المنفصل بحالة 'pending' (انتظار مراجعة الإدارة)
+    // لاحظ تغيير القيمة الافتراضية وحالة الـ DO UPDATE لتصبح 'pending' دائماً عند إعادة التقديم
     const applicationQuery = `
       INSERT INTO driver_applications (
         user_id, vehicle_type, working_city, vehicle_plate, license_number, license_image, vehicle_image, status, updated_at
       ) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, 'approved', NOW())
+      VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', NOW())
       ON CONFLICT (user_id) 
       DO UPDATE SET 
         vehicle_type = EXCLUDED.vehicle_type,
@@ -252,7 +252,7 @@ const processDriverRegister = async (req, res) => {
         license_number = EXCLUDED.license_number,
         license_image = COALESCE(EXCLUDED.license_image, driver_applications.license_image),
         vehicle_image = COALESCE(EXCLUDED.vehicle_image, driver_applications.vehicle_image),
-        status = 'approved',
+        status = 'pending', -- يعود للانتظار مجدداً إذا عدّل الكابتن بياناته
         updated_at = NOW();
     `;
 
@@ -268,33 +268,108 @@ const processDriverRegister = async (req, res) => {
 
     await db.query(applicationQuery, appValues);
 
-    // 2️⃣ ترقية رتبة الحساب في جدول المستخدمين الرئيسي (users) ليصبح سائقاً معتمداً
-    const updateUserQuery = `
-      UPDATE users 
-      SET 
-        default_role = 'both',
-        updated_at = NOW()
-      WHERE id = $1;
-    `;
-    await db.query(updateUserQuery, [driverId]);
-
-    // 3️⃣ تثبيت الصلاحيات الجديدة في الجلسة المباشرة الحية للسيرفر
-    req.session.driverRole = 'both';
+    // ❌ [تم حذف كود تحديث جدول users]: سيبقى الكابتن client في قاعدة البيانات وفي الجلسة (Session)
     
     req.session.save((err) => {
       if (err) {
-        console.error('❌ فشل حفظ الجلسة بعد الترقية المنفصلة:', err);
-        return res.status(500).send('حدث خطأ أثناء تحديث صلاحيات الجلسة.');
+        console.error('❌ فشل حفظ الجلسة بعد تقديم الطلب:', err);
+        return res.status(500).send('حدث خطأ أثناء تحديث بيانات الجلسة.');
       }
-      console.log(`🎉 [Driver Application Saved]: الوثائق حُفظت في الجدول الجديد وتمت ترقية الحساب رقم (${driverId}) بنجاح.`);
-      return res.redirect('/driver/');
+      console.log(`📥 [Driver Application Submitted]: تم استقبال طلب الحساب رقم (${driverId}) وهو الآن قيد الانتظار، مع بقائه زبون حالياً.`);
+      
+      // 🔄 إعادة توجيهه لنفس الصفحة ليظهر له أن الطلب "قيد المراجعة حالياً ⏳" والزر مقفل بناءً على منطق الـ EJS الصارم الذي بنيناه سابقاً
+      return res.redirect('/driver/register');
     });
 
   } catch (error) {
-    console.error('❌ Error inside processDriverRegister (Multi-Table):', error);
+    console.error('❌ Error inside processDriverRegister (Pending Flow):', error);
     return res.render('driver/register', { 
       title: "انضم لكباتن واجدة | ترقية الحساب", 
-      error: "حدث خطأ داخلي أثناء معالجة وحفظ المستندات في جدول الطلبات، يرجى إعادة المحاولة." 
+      error: "حدث خطأ داخلي أثناء حفظ المستندات، يرجى إعادة المحاولة." 
+    });
+  }
+};// =========================================================================
+// 🚀 6️⃣ دالة معالجة إرسال طلب ترقية الكابتن للمراجعة (بدون ترقية تلقائية)
+// =========================================================================
+const processDriverRegister = async (req, res) => {
+  const driverId = req.session.driverId;
+  
+  if (!driverId) {
+    return res.redirect('/driver/login');
+  }
+
+  const { vehicle_type, working_city, vehicle_plate, license_number } = req.body;
+
+  try {
+    // جلب مسارات الصور التي قام Multer برفعها بنجاح في مجلد drivers_docs
+    const licenseImageFile = req.files && req.files['license_image'] ? req.files['license_image'][0].filename : null;
+    const vehicleImageFile = req.files && req.files['vehicle_image'] ? req.files['vehicle_image'][0].filename : null;
+
+    // التحقق من المدخلات الإلزامية للمركبات غير الدراجات الهوائية
+    if (vehicle_type !== 'bike') {
+      if (!license_number || !licenseImageFile) {
+        return res.render('driver/register', { 
+          title: "انضم لكباتن واجدة | ترقية الحساب", 
+          error: "⚠️ يرجى إدخال رقم رخصة السياقة وإرفاق صورتها بشكل واضح." 
+        });
+      }
+      if (vehicle_type !== 'motorcycle' && (!vehicle_plate || !vehicleImageFile)) {
+        return res.render('driver/register', { 
+          title: "انضم لكباتن واجدة | ترقية الحساب", 
+          error: "⚠️ السيارات والشاحنات تتطلب إدخال رقم لوحة الترقيم وصورة البطاقة الرمادية قسراً." 
+        });
+      }
+    }
+
+    // 1️⃣ حقن أو تحديث وثائق الكابتن داخل الجدول المنفصل بحالة 'pending' (انتظار مراجعة الإدارة)
+    // لاحظ تغيير القيمة الافتراضية وحالة الـ DO UPDATE لتصبح 'pending' دائماً عند إعادة التقديم
+    const applicationQuery = `
+      INSERT INTO driver_applications (
+        user_id, vehicle_type, working_city, vehicle_plate, license_number, license_image, vehicle_image, status, updated_at
+      ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, 'pending', NOW())
+      ON CONFLICT (user_id) 
+      DO UPDATE SET 
+        vehicle_type = EXCLUDED.vehicle_type,
+        working_city = EXCLUDED.working_city,
+        vehicle_plate = EXCLUDED.vehicle_plate,
+        license_number = EXCLUDED.license_number,
+        license_image = COALESCE(EXCLUDED.license_image, driver_applications.license_image),
+        vehicle_image = COALESCE(EXCLUDED.vehicle_image, driver_applications.vehicle_image),
+        status = 'pending', -- يعود للانتظار مجدداً إذا عدّل الكابتن بياناته
+        updated_at = NOW();
+    `;
+
+    const appValues = [
+      driverId,
+      vehicle_type,
+      working_city,
+      vehicle_plate ? vehicle_plate.trim() : null,
+      license_number ? license_number.trim() : null,
+      licenseImageFile,
+      vehicleImageFile
+    ];
+
+    await db.query(applicationQuery, appValues);
+
+    // ❌ [تم حذف كود تحديث جدول users]: سيبقى الكابتن client في قاعدة البيانات وفي الجلسة (Session)
+    
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ فشل حفظ الجلسة بعد تقديم الطلب:', err);
+        return res.status(500).send('حدث خطأ أثناء تحديث بيانات الجلسة.');
+      }
+      console.log(`📥 [Driver Application Submitted]: تم استقبال طلب الحساب رقم (${driverId}) وهو الآن قيد الانتظار، مع بقائه زبون حالياً.`);
+      
+      // 🔄 إعادة توجيهه لنفس الصفحة ليظهر له أن الطلب "قيد المراجعة حالياً ⏳" والزر مقفل بناءً على منطق الـ EJS الصارم الذي بنيناه سابقاً
+      return res.redirect('/driver/register');
+    });
+
+  } catch (error) {
+    console.error('❌ Error inside processDriverRegister (Pending Flow):', error);
+    return res.render('driver/register', { 
+      title: "انضم لكباتن واجدة | ترقية الحساب", 
+      error: "حدث خطأ داخلي أثناء حفظ المستندات، يرجى إعادة المحاولة." 
     });
   }
 };
