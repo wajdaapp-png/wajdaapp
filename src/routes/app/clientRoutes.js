@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../../controllers/clientController');
 const { uploadAvatar } = require('../../middleware/uploadMiddleware');
-const promoController = require('../../controllers/promoController');
 
 router.get('/package-offers/:package_id', clientController.getPackageOffers);
 router.get('/package-status/:package_id', clientController.getPackageStatus);
@@ -27,6 +26,5 @@ router.post('/notifications/mark-read', clientController.markClientNotificationA
 
 
 
-router.post('/promo/check', promoController.checkPromoCode);
 
 module.exports = router;

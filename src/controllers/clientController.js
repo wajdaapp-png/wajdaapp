@@ -106,10 +106,8 @@ const getPackageOffers = async (req, res) => {
 };
 
 
-// src/controllers/clientController.js
-
 // =========================================================================
-// 2️⃣ جلب حالة الطلب الجارية للتتبع الحي (نسخة مدعومة بنظام الكابونات والبرومو 🧭⚡)
+// 2️⃣ جلب حالة الطلب الجارية للتتبع الحي (نسخة مصححة ومؤمنة مالياً لـ Shopping 🧭⚡)
 // =========================================================================
 const getPackageStatus = async (req, res) => {
   const rawId = req.params.package_id || req.params.id;
@@ -131,7 +129,7 @@ const getPackageStatus = async (req, res) => {
         u.phone_number AS driver_phone,
         COALESCE(u.avatar_url, '') AS driver_avatar,
         
-        -- جلب السعر ديناميكياً بناءً على نوع الطلب لمنع قيمة 0.0 في الـ Shopping
+        -- 🎯 التعديل السحري الأول: جلب السعر ديناميكياً بناءً على نوع الطلب لمنع قيمة 0.0 في الـ Shopping
         CASE 
           WHEN o.order_type = 'shopping' THEN COALESCE(s.estimated_budget, 0.0)
           ELSE COALESCE(offers.offer_price, 0.0)
@@ -141,14 +139,7 @@ const getPackageStatus = async (req, res) => {
         COALESCE(p.extra_details, s.shopping_list) AS pickup_city, 
         o.pickup_address,
         o.dropoff_address,
-        
-        -- 🎯 التعديل السحري الحاسم: جلب نسبة الخصم الحقيقية للكود المستخدم في هذا الطلب من جدول الـ promo_codes
-        -- وإذا لم يجد، يرتد تلقائياً لقيمة الـ promo المحفوظة بحساب المستخدم كخيار بديل آمن (Fallback)
-        COALESCE(
-          (SELECT discount_percentage FROM promo_codes WHERE code = p.promo_code_used OR code = s.promo_code_used LIMIT 1),
-          u2.promo, 
-          0
-        )::INT AS client_promo
+        COALESCE(u2.promo, 0)::INT AS client_promo
 
       FROM core_orders o
       LEFT JOIN delivery_offers offers ON o.id = offers.order_id AND offers.status = 'accepted' 
@@ -177,19 +168,17 @@ const getPackageStatus = async (req, res) => {
         driver_phone: tripData.driver_phone || '',
         driver_avatar: tripData.driver_avatar || '',
         
-        // تمرير الحقل الموحد والآمن الجديد هنا
+        // 🎯 تمرير الحقل الموحد والآمن الجديد هنا
         price: parseFloat(tripData.final_trip_price) || 0.0,
         
         package_name: tripData.package_name,
         pickup_city: tripData.pickup_city,
         dropoff_city: tripData.order_type === 'shopping' ? 'موقعك الحالي المقيد' : tripData.dropoff_address,
-        
-        // قذف النسبة الدقيقة المستخرجة حياً ليتعرف عليها فلاتر ويخصم رسوم المنصة بالمليم!
         client_promo: tripData.client_promo
     });
 
   } catch (error) {
-    console.error('❌ Error inside getPackageStatus with Core Promo:', error);
+    console.error('❌ Error inside getPackageStatus:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
