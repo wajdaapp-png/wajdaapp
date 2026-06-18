@@ -652,6 +652,22 @@ const skipDriverRating = async (req, res) => {
     return res.status(500).json({ success: false, message: 'حدث خطأ في السيرفر أثناء معالجة تخطي التقييم.' });
   }
 };
+const getSystemSettings = async (req, res) => {
+  try {
+    const result = await db.query("SELECT key_name, key_value FROM system_settings;");
+    
+    // تحويل المصفوفة إلى كائن (Object) يسهل على Flutter قراءته
+    const settings = {};
+    result.rows.forEach(row => {
+      settings[row.key_name] = parseFloat(row.key_value);
+    });
+
+    // ستُرسل النتيجة هكذا: { min_version: 1.00, min_delivery_price: 100.00, ... }
+    return res.status(200).json({ success: true, settings });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "خطأ في السيرفر" });
+  }
+};
 // لا تنسَ تصدير الدوال في أسفل الملف!
 module.exports = { 
   getPackageOffers, 
@@ -666,5 +682,7 @@ module.exports = {
   deleteAccount,
   getClientNotifications,
   markClientNotificationAsRead,
-  skipDriverRating
+  skipDriverRating,
+  getSystemSettings
+  
 };
