@@ -1,4 +1,4 @@
-const db = require('../../onfig/db');
+const db = require('../../config/db');
 const axios = require('axios'); 
 
 // 1️⃣ دالة عرض صفحة إدارة الزبائن وجلب الإحصائيات الشاملة
