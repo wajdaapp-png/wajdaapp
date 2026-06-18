@@ -1,5 +1,6 @@
 const db = require('../../config/db');
-const bcrypt = require('bcrypt'); // تأكد من تثبيته لتشفير كلمة مرور المسؤول الجديد
+const nodemailer = require('nodemailer');
+const axios = require('axios'); 
 
 // 📜 1. جلب قائمة المسؤولين وعرض صفحة الإدارة
 const getSettingsPage = async (req, res) => {

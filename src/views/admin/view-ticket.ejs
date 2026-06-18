@@ -28,27 +28,47 @@
             </div>
         </div>
 
-        <div class="border-t border-[#2A2A2A] pt-6 space-y-4">
+<div class="border-t border-[#2A2A2A] pt-6 space-y-4">
             <h3 class="text-xs font-bold text-white flex items-center gap-2">
-                <span>💬</span> اتخاذ إجراء وتحديث حالة الطلب
+                <span>💬</span> اتخاذ إجراء ومعالجة الشكوى عبر البريد الإلكتروني
             </h3>
+            
+            <div class="flex flex-wrap items-center gap-2 bg-[#141414] p-3 rounded-2xl border border-[#2A2A2A]">
+                <span class="text-[10px] font-bold text-gray-500 ml-2">💡 ردود سريعة جاهزة:</span>
+                <button type="button" onclick="injectTemplate('solve')" class="px-2.5 py-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 border border-green-500/20 text-[10px] rounded-lg font-bold transition-all">
+                    ✅ تم حل المشكلة
+                </button>
+                <button type="button" onclick="injectTemplate('investigate')" class="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 text-[10px] rounded-lg font-bold transition-all">
+                    ⏳ جاري فحص الرادار والمحفظة
+                </button>
+                <button type="button" onclick="injectTemplate('reject')" class="px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[10px] rounded-lg font-bold transition-all">
+                    ❌ طلب مرفوض / مخالف
+                </button>
+            </div>
             
             <form action="/admin/tickets/action/<%= ticket.id %>" method="POST" class="space-y-4">
                 <div>
                     <label class="block text-[11px] font-bold text-gray-400 mb-2">تحديث الحالة الإدارية للنزاع:</label>
-                    <select name="status" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2.5 outline-none focus:border-[#FF6B00] cursor-pointer w-full sm:w-60">
+                    <select id="ticket-status-select" name="status" class="bg-[#141414] border border-[#2A2A2A] text-xs text-white rounded-xl px-3 py-2.5 outline-none focus:border-[#FF6B00] cursor-pointer w-full sm:w-60">
                         <option value="pending" <%= ticket.status === 'pending' ? 'selected' : '' %>>ابقائها قيد المراجعة الفنية ⏳</option>
                         <option value="closed" <%= ticket.status === 'closed' ? 'selected' : '' %>>إغلاق التذكرة نهائياً (تم الحل) ✅</option>
                     </select>
                 </div>
 
+                <div>
+                    <label class="block text-[11px] font-bold text-gray-400 mb-2">مضمون رسالة الرد (ستصل مباشرة لعلبة بريد العميل):</label>
+                    <textarea id="reply_textarea" name="reply_message" rows="6" placeholder="اكتب ردك هنا يدوياً أو اختر من القوالب العلوية للحقن الفوري..." required
+                        class="w-full bg-[#141414] border border-[#2A2A2A] focus:border-[#FF6B00] rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors resize-none leading-relaxed"></textarea>
+                </div>
+
                 <div class="flex items-center gap-4 pt-2">
                     <button type="submit" class="bg-[#FF6B00] hover:bg-orange-600 text-black font-black text-xs py-3 px-6 rounded-xl transition-all shadow-lg shadow-[#FF6B00]/10 transform active:scale-95">
-                        💾 حفظ وتطبيق الإجراء الحالي
+                        🚀 إرسال الرد الرسمي وقفل الإجراء
                     </button>
                 </div>
             </form>
         </div>
+    </div>
     </div>
 
     <div class="space-y-6">
@@ -88,5 +108,33 @@
     </div>
 
 </div>
+
+<script>
+    function injectTemplate(type) {
+        const textarea = document.getElementById('reply_textarea');
+        const statusSelect = document.getElementById('ticket-status-select');
+        const ticketNo = "<%= ticket.ticket_no %>";
+
+        const templates = {
+            solve: `مرحباً يا كابتن/زبون واجدة،\n\nنشكرك على تواصلك معنا بخصوص التذكرة رقم ${ticketNo}.\nيسعدنا إعلامك بأن فريق المراجعة اللوجستية قد قام بمعالجة الشكوى وحل المشكلة المتعلقة بحسابك أو محفظتك بنجاح.\n\nيرجى إعادة فتح التطبيق وتحديث الصفحة، وفي حال واجهت أي عطل إضافي لا تتردد في مراسلتنا.\n\nدمت في أمان الله،\nإدارة منصة واجدة اللوجستية 🇩🇿`,
+            
+            investigate: `مرحباً يا كابتن/زبون واجدة،\n\nنشكرك على تواصلك معنا بخصوص التذكرة رقم ${ticketNo}.\nنود إفادتك بأن شكواك قد تم تحويلها رسمياً إلى قسم العمليات الفنية والمالية، وهي الآن قيد الفحص والتدقيق المعمق (رادارات التتبع والمحفظة).\n\nسنقوم بالرد النهائي عليك وإرسال تحديث فوري فور صدور تقرير الإدارة.\n\nنشكر صبرك وتفهمك،\nغرفة قيادة عمليات واجدة ⏳`,
+            
+            reject: `مرحباً يا كابتن/زبون واجدة،\n\nبخصوص التذكرة رقم ${ticketNo} المرفوعة لدينا.\nبعد مراجعة البيانات وسجلات الرحلات بدقة من قبل فريق الحوكمة اللوجستية، نأسف لإعلامك بأنه تم رفض طلبك الحالي لمخالفته شروط وقوانين الاستخدام المنصوص عليها في المنصة.\n\nيمكنك مراجعة بنود الاتفاقية أو التواصل مع الدعم المباشر إذا كان هناك أي لبس.\n\nتحياتنا،\nلجنة الانضباط والمراجعة - واجدة 🚫`
+        };
+
+        // حقن النص بناء على الاختيار
+        if(templates[type]) {
+            textarea.value = templates[type];
+            
+            // تغيير خيار السيلكت أوتوماتيكياً تسهيلاً للمسؤول
+            if(type === 'solve') {
+                statusSelect.value = 'closed';
+            } else {
+                statusSelect.value = 'pending';
+            }
+        }
+    }
+</script>
 
 <%- include('partials/footer') %>
