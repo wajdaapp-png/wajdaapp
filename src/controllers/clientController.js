@@ -684,5 +684,4 @@ module.exports = {
   markClientNotificationAsRead,
   skipDriverRating,
   getSystemSettings
-  
 };

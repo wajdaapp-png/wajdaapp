@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../../controllers/clientController');
 const { uploadAvatar } = require('../../middleware/uploadMiddleware');
+const promoController = require('../../controllers/promoController');
 
 router.get('/package-offers/:package_id', clientController.getPackageOffers);
 router.get('/package-status/:package_id', clientController.getPackageStatus);
@@ -23,5 +24,9 @@ router.get('/system-settings', clientController.getSystemSettings );
 // ✅ تم نزع /clients لأن البادئة تأتي تلقائياً من الموجه الرئيسي للمشروع
 router.get('/notifications/:user_id', clientController.getClientNotifications);
 router.post('/notifications/mark-read', clientController.markClientNotificationAsRead);
+
+
+
+router.post('/promo/check', promoController.checkPromoCode);
 
 module.exports = router;
