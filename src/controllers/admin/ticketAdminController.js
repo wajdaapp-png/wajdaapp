@@ -1,5 +1,8 @@
 // src/controllers/adminController.js
 const db = require('../../config/db');
+const nodemailer = require('nodemailer');
+const axios = require('axios'); 
+
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'mail.privateemail.com',
     port: parseInt(process.env.SMTP_PORT || '465'),
