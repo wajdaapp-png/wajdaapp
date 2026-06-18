@@ -55,30 +55,41 @@ const createSupportTicket = async (req, res) => {
   try {
     const { phone, email, subject, priority, description } = req.body;
 
-    // 1. توليد رقم تذكرة عشوائي فريد ومؤمن (مثال: TKT-2026-F982)
+    // 1. توليد رقم تذكرة عشوائي فريد ومؤمن
     const randomHex = Math.floor(1000 + Math.random() * 9000).toString(16).toUpperCase();
     const ticketNo = `TKT-2026-${randomHex}`;
 
-    // 2. حقن التذكرة في قاعدة البيانات مع الحقول الجديدة وحفظ الـ user_id كـ null مؤقتاً للزوار
+    // 2. حقن التذكرة في قاعدة البيانات مع الحقول الجديدة
     const insertQuery = `
       INSERT INTO tickets (phone, email, subject, priority, description, status, ticket_no)
       VALUES ($1, $2, $3, $4, $5, 'open', $6)
       RETURNING ticket_no;
     `;
     
-    await db.query(insertQuery, [phone, email, subject, priority, description, ticketNo]);
+    await db.query(insertQuery, [
+      phone ? phone.trim() : null, 
+      email ? email.trim() : null, 
+      subject ? subject.trim() : null, 
+      priority, 
+      description ? description.trim() : null, 
+      ticketNo
+    ]);
 
-    // 3. إعادة التوجيه لصفحة الدعم مع تجميل الرسالة التفاعلية
-    return res.send(`
-      <script>
-        alert('🎉 تم فتح تذكرة الدعم الفني بنجاح! رقم تذكرتك الرسمي هو: ${ticketNo}\\nسيتواصل معك فريق الدعم عبر الهاتف: ${phone}');
-        window.location.href = '/contact';
-      </script>
-    `);
+    // 3. إعادة تصيير صفحة الاتصال وحقن متغير الـ success مع التنبيه بالإيميل ورقم التذكرة
+    return res.render('home/contact', {
+      title: 'الاتصال بالدعم الفني وفتح تذكرة | منصة واجدة',
+      success: true, // تفعيل صندوق الإشعار البرتقالي في الواجهة
+      ticketNo: ticketNo, // تمرير رقم التذكرة للواجهة إن أردت عرضه
+      error: null
+    });
 
   } catch (error) {
     console.error('❌ Error inside createSupportTicket:', error);
-    return res.status(500).send('حدث خطأ فني أثناء محاولة إرسال التذكرة لقاعدة البيانات.');
+    return res.render('home/contact', {
+      title: 'الاتصال بالدعم الفني وفتح تذكرة | منصة واجدة',
+      success: false,
+      error: 'حدث خطأ فني أثناء محاولة إرسال التذكرة، يرجى إعادة المحاولة لاحقاً.'
+    });
   }
 };
 // 🎯 تصدير جميع الدوال ليتعرف عليها ملف الـ Routes بأمان
