@@ -1,11 +1,9 @@
-<!-- src/views/home/contact.ejs -->
 <%- include('partials/header', { title: 'الاتصال بالدعم الفني وفتح تذكرة | منصة واجدة' }) %>
 <%- include('partials/navbar') %>
 
 <div class="flex-grow container mx-auto max-w-5xl px-4 py-12 text-right">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
-        <!-- القسم الأيمن: استمارة إنشاء التذكرة بحقولها الجديدة -->
         <div class="lg:col-span-2 bg-kCard border border-kBorder rounded-3xl p-6 md:p-8 shadow-2xl space-y-6">
             <div>
                 <h1 class="text-xl font-black text-white flex items-center gap-2">
@@ -14,13 +12,16 @@
                 <p class="text-xs text-kMuted mt-1">يرجى إدخال بيانات التواصل معك وسيتولى فريق العمل مراجعة طلبك فوراً.</p>
             </div>
 
-            <!-- ⚡ صمام التأكيد: إشعار النجاح بعد الإرسال المباشر -->
             <% if (typeof success !== 'undefined' && success) { %>
                 <div class="p-4 bg-orange-950/30 border border-kOrange/40 rounded-2xl flex items-start gap-3 animate-fade-in">
                     <span class="text-xl mt-0.5">🎉</span>
                     <div class="space-y-1">
                         <h4 class="text-xs font-bold text-white">تم استلام تذكرتك بنجاح!</h4>
-                        <p class="text-[11px] text-kMuted leading-relaxed">شكراً لتواصلك معنا. تم قيد تذكرتك في نظام الدعم اللوجستي، <span class="text-kOrange font-bold">وسيقوم فريق العمل بالرد عليك مباشرة عبر بريدك الإلكتروني المرفق</span> في أقرب وقت ممكن.</p>
+                        <p class="text-[11px] text-kMuted leading-relaxed">
+                            تم قيد طلبك برقم: <span class="text-white font-mono font-bold bg-kBg px-1.5 py-0.5 rounded border border-kBorder"><%= typeof ticketNo !== 'undefined' ? ticketNo : '' %></span>.
+                            <br>
+                            <span class="text-kOrange font-bold">سيقوم فريق العمل بالرد عليك مباشرة عبر بريدك الإلكتروني المرفق</span> في أقرب وقت ممكن.
+                        </p>
                     </div>
                 </div>
             <% } %>
@@ -33,7 +34,48 @@
             <% } %>
 
             <form action="/contact/ticket" method="POST" class="space-y-4">
-        <!-- القسم الأيسر: اتصالات مباشرة -->
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2">رقم الهاتف النشط</label>
+                        <input type="tel" name="phone" placeholder="مثال: 0555XXXXXX" required
+                            class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white font-mono outline-none transition-colors">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2">البريد الإلكتروني</label>
+                        <input type="email" name="email" placeholder="name@example.com" required
+                            class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white font-mono outline-none transition-colors">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">موضوع التذكرة الرئيسي</label>
+                    <input type="text" name="subject" placeholder="مثال: مشكلة تعليق رصيد المحفظة، عطل في الرادار..." required
+                        class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">درجة الأهمية والخطورة</label>
+                    <select name="priority" class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors cursor-pointer">
+                        <option value="low">عادية / استفسار عام</option>
+                        <option value="medium" selected>متوسطة / مشكلة تقنية خفيفة</option>
+                        <option value="high">حرجة جداً / نزاع مالي وحظر حساب</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2">شرح وتفاصيل الشكوى بالكامل</label>
+                    <textarea name="description" rows="5" placeholder="يرجى كتابة تفاصيل المشكلة بدقة (رقم الرحلة، القيمة المالية، وقت العطل)..." required
+                        class="w-full bg-kBg border border-kBorder focus:border-kOrange rounded-xl px-4 py-3 text-xs text-white outline-none transition-colors resize-none"></textarea>
+                </div>
+
+                <button type="submit" 
+                    class="w-full bg-kOrange hover:bg-orange-600 text-white font-black text-xs py-3.5 px-6 rounded-xl shadow-lg transition-all duration-200 transform active:scale-95 flex items-center justify-center gap-2">
+                    🚀 إرسال التذكرة لغرفة القيادة
+                </button>
+            </form> </div>
+
         <div class="space-y-4">
             <div class="bg-kCard border border-kBorder rounded-3xl p-6 shadow-2xl">
                 <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
