@@ -141,30 +141,41 @@ const toggleClientStatus = async (req, res) => {
             if (action === 'activate') {
                 emailSubject = '🥳 تم تفعيل حسابك بنجاح | منصة واجدة';
                 emailHtmlContent = `
-                    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; background-color: #111; color: #fff; padding: 30px; border-radius: 20px; border: 1px solid #2A2A2A; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #FF6B00; margin-bottom: 20px;">مرحباً بك في عائلة واجدة! 🌴</h2>
-                        <p style="font-size: 15px; line-height: 1.6;">عزيزنا العميل <strong>${clientData.full_name}</strong>،</p>
-                        <p style="font-size: 14px; line-height: 1.6; color: #ccc;">يسعدنا إبلاغك بأن إدارة المنصة قد قامت بـ <strong>مراجعة حسابك وتفعيله بنجاح</strong>.</p>
-                        <div style="background-color: #1C1C1C; padding: 15px; border-radius: 12px; border: 1px solid #FF6B00/30; margin: 20px 0; text-align: center;">
-                            <p style="margin: 0; font-size: 14px; color: #fff;">حالة الحساب الآن: <span style="color: #44FF44; font-weight: bold;">نشط (Active)</span></p>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+                    </style>
+                    <div style="direction: rtl; text-align: right; font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #111; color: #fff; padding: 35px; border-radius: 24px; border: 1px solid #222; max-width: 550px; margin: 0 auto; shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 900; color: #FF6B00; margin-bottom: 20px; font-size: 22px;">مرحباً بك في عائلة واجدة! 🌴</h2>
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.6;">عزيزنا العميل <strong>${clientData.full_name}</strong>،</p>
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.6; color: #b3b3b3;">يسعدنا إبلاغك بأن إدارة المنصة قد قامت بـ <strong>مراجعة حسابك وتفعيله بنجاح</strong>.</p>
+                        
+                        <div style="background-color: #161616; padding: 15px; border-radius: 16px; border: 1px solid #2A2A2A; margin: 25px 0; text-align: center;">
+                            <p style="font-family: 'Cairo', sans-serif; font-weight: 700; margin: 0; font-size: 14px; color: #fff;">حالة الحساب الآن: <span style="color: #44FF44; font-weight: bold;">نشط (Active) 🟢</span></p>
                         </div>
-                        <p style="font-size: 14px; line-height: 1.6; color: #ccc;">يمكنك الآن فتح التطبيق فوراً واستخدام الخدمات بكل حرية.</p>
-                        <hr style="border: 0; border-top: 1px solid #2A2A2A; margin: 25px 0;">
-                        <small style="color: #777; display: block; text-align: center;">منظومة واجدة اللوجستية المتكاملة - بسكرة 🌴</small>
+                        
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.6; color: #b3b3b3;">يمكنك الآن فتح التطبيق فوراً، واستخدام رادار الخرائط الحي، وطلب الرحلات والشحنات بكل حرية وبأعلى سرعة لوجستية.</p>
+                        <hr style="border: 0; border-top: 1px solid #222; margin: 25px 0;">
+                        <small style="font-family: 'Cairo', sans-serif; font-weight: 400; color: #666; display: block; text-align: center; font-size: 11px;">منظومة واجدة اللوجستية المتكاملة - بسكرة 🌴</small>
                     </div>
                 `;
             } else if (action === 'ban') {
                 emailSubject = '⚠️ تنبيه أمني: تعليق حسابك | منصة واجدة';
                 emailHtmlContent = `
-                    <div style="direction: rtl; text-align: right; font-family: 'Cairo', sans-serif; background-color: #111; color: #fff; padding: 30px; border-radius: 20px; border: 1px solid #2A2A2A; max-width: 600px; margin: 0 auto;">
-                        <h2 style="color: #FF3333; margin-bottom: 20px;">تنبيه أمني هام 🛑</h2>
-                        <p style="font-size: 15px; line-height: 1.6;">المستخدم <strong>${clientData.full_name}</strong>،</p>
-                        <p style="font-size: 14px; line-height: 1.6; color: #ccc;">نأسف لإبلاغك بأن حسابك تم <strong style="color: #FF3333;">حظره وتجميده</strong> لمخالفة القوانين.</p>
-                        <div style="background-color: #1C1C1C; padding: 15px; border-radius: 12px; border: 1px solid #FF3333/30; margin: 20px 0; text-align: center;">
-                            <p style="margin: 0; font-size: 14px; color: #fff;">حالة الحساب الحالية: <span style="color: #FF3333; font-weight: bold;">محظور (Banned)</span></p>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+                    </style>
+                    <div style="direction: rtl; text-align: right; font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #111; color: #fff; padding: 35px; border-radius: 24px; border: 1px solid #222; max-width: 550px; margin: 0 auto;">
+                        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 900; color: #FF3333; margin-bottom: 20px; font-size: 22px;">تنبيه أمني هام 🛑</h2>
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.6;">المستخدم <strong>${clientData.full_name}</strong>،</p>
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.6; color: #b3b3b3;">نأسف لإبلاغك بأن إدارة الرقابة والأمان في منصة واجدة قد قامت بـ <strong style="color: #FF3333;">حظر وتجميد حسابك</strong> نظراً لمخالفة شروط الاستخدام العام أو سياسات التعامل المالي.</p>
+                        
+                        <div style="background-color: #161616; padding: 15px; border-radius: 16px; border: 1px solid #2A2A2A; margin: 25px 0; text-align: center;">
+                            <p style="font-family: 'Cairo', sans-serif; font-weight: 700; margin: 0; font-size: 14px; color: #fff;">حالة الحساب الحالية: <span style="color: #FF3333; font-weight: bold;">محظور (Banned) 🔴</span></p>
                         </div>
-                        <hr style="border: 0; border-top: 1px solid #2A2A2A; margin: 25px 0;">
-                        <small style="color: #777; display: block; text-align: center;">مكتب الأمن والرقابة - منصة واجدة</small>
+                        
+                        <p style="font-family: 'Cairo', sans-serif; font-weight: 400; font-size: 13px; line-height: 1.6; color: #999;">إذا كنت تعتقد أن هذا الحظر تم عن طريق الخطأ، أو ترغب في تسوية مديونية معلقة لإعادة تفعيل الحساب، يرجى التواصل فوراً مع الإدارة العليا عبر قنوات الدعم الرسمية.</p>
+                        <hr style="border: 0; border-top: 1px solid #222; margin: 25px 0;">
+                        <small style="font-family: 'Cairo', sans-serif; font-weight: 400; color: #666; display: block; text-align: center; font-size: 11px;">مكتب الأمن السيبراني والرقابة - منصة واجدة</small>
                     </div>
                 `;
             }
