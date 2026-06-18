@@ -403,8 +403,16 @@ const completeTrip = async (req, res) => {
 
     await db.query('COMMIT');
     
-    // 📨 إطلاق محرك الفواتير البريدية المستدعى من الملف الخارجي
+    // 📨 [بدء فحص محرك الفواتير البريدية حياً]
+    console.log(`🔎 [Email Check] فحص بيانات العميل للطلب #${order_id}:`, {
+      hasOrderDetail: !!orderDetail,
+      client_email: orderDetail ? orderDetail.client_email : 'مفقود كلياً',
+      client_name: orderDetail ? orderDetail.client_name : 'مفقود كلياً'
+    });
+
     if (orderDetail && orderDetail.client_email) {
+      console.log(`🚀 [Email Trigger] جاري إرسال الفاتورة الآن إلى: ${orderDetail.client_email}...`);
+      
       sendEmailInvoice(
         orderDetail.client_email, 
         orderDetail.client_name, 
@@ -415,7 +423,18 @@ const completeTrip = async (req, res) => {
         finalClientFixedFee, 
         totalInvoiceAmount,
         clientPromo
-      ).catch(err => console.error("❌ Failed sending email invoice:", err));
+      )
+      .then((info) => {
+        // نجاح الإرسال من طرف سيرفر الـ SMTP
+        console.log(`✅ [Email Success] تم إرسال الفاتورة بنجاح فخم! MessageId: ${info.messageId}`);
+        console.log(`📬 [Email Response] رد سيرفر البريد:`, info.response);
+      })
+      .catch(err => {
+        // التقاط خطأ الـ SMTP (مثل كلمة مرور الإيميل خاطئة أو الهوست مغلق)
+        console.error("❌ [Email SMTP Error] فشل محرك الإرسال أثناء الاتصال بالسيرفر البريدي:", err);
+      });
+    } else {
+      console.warn(`⚠️ [Email Skipped] تم تخطي إرسال الإيميل! السبب: شرط الـ IF لم يتحقق (إما orderDetail مفقود أو حقل client_email فارغ في قاعدة البيانات).`);
     }
     
     if (req.io) {
